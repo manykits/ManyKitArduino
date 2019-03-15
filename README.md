@@ -10,8 +10,8 @@ var isHigh = false;
 
 function myFunc() {
   var isReady = mkArduino.isBoardReady();
-  if (isReady)
-  {
+  
+  if (isReady) {
     var val = mkArduino.digitalRead("13");
 
     if (!isHigh) {
