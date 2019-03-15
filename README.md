@@ -34,8 +34,7 @@ function myFunc() {
       
       mkArduino.digitalWrite("13", "low");
       
-      isHigh = false;
-      
+      isHigh = false; 
     }
     
   }
