@@ -3,7 +3,7 @@
 
 #if defined MK_DHT
 
-/* ManyKit_DHT library
+/* MK_DHT library
 
 MIT license
 written by Adafruit Industries
@@ -40,10 +40,10 @@ written by Adafruit Industries
 #define AM2301 21
 
 
-class ManyKit_DHT {
+class MK_DHT {
   public:
-   ManyKit_DHT();
-   ManyKit_DHT(uint8_t pin, uint8_t type, uint8_t count=6);
+   MK_DHT();
+   MK_DHT(uint8_t pin, uint8_t type, uint8_t count=6);
    void begin(void);
    float readTemperature(bool S=false, bool force=false);
    float convertCtoF(float);
@@ -57,7 +57,7 @@ class ManyKit_DHT {
   uint8_t _pin, _type;
   #ifdef __AVR
     // Use direct GPIO access on an 8-bit AVR so keep track of the port and bitmask
-    // for the digital pin connected to the ManyKit_DHT.  Other platforms will use digitalRead.
+    // for the digital pin connected to the MK_DHT.  Other platforms will use digitalRead.
     uint8_t _bit, _port;
   #endif
   uint32_t _lastreadtime, _maxcycles;

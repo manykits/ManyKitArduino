@@ -2,7 +2,7 @@
 
 #if defined MK_DHT
 
-/* ManyKit_DHT library
+/* MK_DHT library
 
 MIT license
 written by Adafruit Industries
@@ -10,11 +10,11 @@ written by Adafruit Industries
 
 #define MIN_INTERVAL 2000
 
-ManyKit_DHT::ManyKit_DHT()
+MK_DHT::MK_DHT()
 {
 }
 
-ManyKit_DHT::ManyKit_DHT(uint8_t pin, uint8_t type, uint8_t count) {
+MK_DHT::MK_DHT(uint8_t pin, uint8_t type, uint8_t count) {
   _pin = pin;
   _type = type;
   #ifdef __AVR
@@ -22,12 +22,12 @@ ManyKit_DHT::ManyKit_DHT(uint8_t pin, uint8_t type, uint8_t count) {
     _port = digitalPinToPort(pin);
   #endif
   _maxcycles = microsecondsToClockCycles(1000);  // 1 millisecond timeout for
-                                                 // reading pulses from ManyKit_DHT sensor.
-  // Note that count is now ignored as the ManyKit_DHT reading algorithm adjusts itself
+                                                 // reading pulses from MK_DHT sensor.
+  // Note that count is now ignored as the MK_DHT reading algorithm adjusts itself
   // basd on the speed of the processor.
 }
 
-void ManyKit_DHT::begin(void) {
+void MK_DHT::begin(void) {
   // set up the pins!
   pinMode(_pin, INPUT_PULLUP);
   // Using this value makes sure that millis() - lastreadtime will be
@@ -38,7 +38,7 @@ void ManyKit_DHT::begin(void) {
 }
 
 //boolean S == Scale.  True == Fahrenheit; False == Celcius
-float ManyKit_DHT::readTemperature(bool S, bool force) {
+float MK_DHT::readTemperature(bool S, bool force) {
   float f = NAN;
 
   if (read(force)) {
@@ -67,15 +67,15 @@ float ManyKit_DHT::readTemperature(bool S, bool force) {
   return f;
 }
 
-float ManyKit_DHT::convertCtoF(float c) {
+float MK_DHT::convertCtoF(float c) {
   return c * 1.8 + 32;
 }
 
-float ManyKit_DHT::convertFtoC(float f) {
+float MK_DHT::convertFtoC(float f) {
   return (f - 32) * 0.55555;
 }
 
-float ManyKit_DHT::readHumidity(bool force) {
+float MK_DHT::readHumidity(bool force) {
   float f = NAN;
   if (read()) {
     switch (_type) {
@@ -95,7 +95,7 @@ float ManyKit_DHT::readHumidity(bool force) {
 }
 
 //boolean isFahrenheit: True == Fahrenheit; False == Celcius
-float ManyKit_DHT::computeHeatIndex(float temperature, float percentHumidity, bool isFahrenheit) {
+float MK_DHT::computeHeatIndex(float temperature, float percentHumidity, bool isFahrenheit) {
   // Using both Rothfusz and Steadman's equations
   // http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
   float hi;
@@ -126,7 +126,7 @@ float ManyKit_DHT::computeHeatIndex(float temperature, float percentHumidity, bo
   return isFahrenheit ? hi : convertFtoC(hi);
 }
 
-boolean ManyKit_DHT::read(bool force) {
+boolean MK_DHT::read(bool force) {
   // Check if sensor was read less than two seconds ago and return early
   // to use last reading.
   uint32_t currenttime = millis();
@@ -138,7 +138,7 @@ boolean ManyKit_DHT::read(bool force) {
   // Reset 40 bits of received data to zero.
   data[0] = data[1] = data[2] = data[3] = data[4] = 0;
 
-  // Send start signal.  See ManyKit_DHT datasheet for full signal diagram:
+  // Send start signal.  See MK_DHT datasheet for full signal diagram:
   //   http://www.adafruit.com/datasheets/Digital%20humidity%20and%20temperature%20sensor%20AM2302.pdf
 
   // Go into high impedence state to let pull-up raise data line level and
@@ -161,7 +161,7 @@ boolean ManyKit_DHT::read(bool force) {
     digitalWrite(_pin, HIGH);
     delayMicroseconds(40);
 
-    // Now start reading the data line to get the value from the ManyKit_DHT sensor.
+    // Now start reading the data line to get the value from the MK_DHT sensor.
     pinMode(_pin, INPUT_PULLUP);
     delayMicroseconds(10);  // Delay a bit to let sensor pull data line low.
 
@@ -240,7 +240,7 @@ boolean ManyKit_DHT::read(bool force) {
 // This is adapted from Arduino's pulseInLong function (which is only available
 // in the very latest IDE versions):
 //   https://github.com/arduino/Arduino/blob/master/hardware/arduino/avr/cores/arduino/wiring_pulse.c
-uint32_t ManyKit_DHT::expectPulse(bool level) {
+uint32_t MK_DHT::expectPulse(bool level) {
   uint32_t count = 0;
   // On AVR platforms use direct GPIO port access as it's much faster and better
   // for catching pulses that are 10's of microseconds in length:

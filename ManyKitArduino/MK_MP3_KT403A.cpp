@@ -76,7 +76,7 @@ void MP3::Specify_FolderMP3_Play(uint16_t index)
     delay(10);
 }
 */
-// 鎸囧畾涓�"01"鐨勬枃浠跺す锛屾洸鐩负"001sdafas.mp3"
+// 閹稿洤鐣炬稉锟�"01"閻ㄥ嫭鏋冩禒璺恒仚閿涘本娲搁惄顔昏礋"001sdafas.mp3"
 void MP3::PlayFolderIndex(uint8_t folder, uint8_t index)
 {
     MK_Serial::write(0x7E);

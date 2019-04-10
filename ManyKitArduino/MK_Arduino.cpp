@@ -202,7 +202,7 @@ void MK_Arduino::Init(bool isReset)
   mPID1 = 0;
 #endif
 
-#if defined ManyKit_DHT
+#if defined MK_DHT
   mIsInitedDHT = false;
 #endif
 }
@@ -479,7 +479,7 @@ void MK_Arduino::Tick()
   }
 #endif
 
-#if defined ManyKit_DHT
+#if defined MK_DHT
   _DHTSendTemperatureHumidity();
 #endif
 }
@@ -492,8 +492,8 @@ void MK_Arduino::_DistInit_(int pinTrig, int pinEcho)
 {
   mPinDistTrigger = pinTrig;
   mPinDistEcho = pinEcho;
-  pinMode(mPinDistTrigger, OUTPUT); // 瀹氫箟瓒呭０娉㈣緭鍑鸿剼
-  pinMode(mPinDistEcho, INPUT);     // 瀹氫箟瓒呭０娉㈣緭鍏ヨ剼
+  pinMode(mPinDistTrigger, OUTPUT); // 鐎规矮绠熺搾鍛紣濞夈垼绶崙楦垮壖
+  pinMode(mPinDistEcho, INPUT);     // 鐎规矮绠熺搾鍛紣濞夈垼绶崗銉ㄥ壖
 
   mDist = 0.0f;
   mDistCheckLastTime = 0;
@@ -501,14 +501,14 @@ void MK_Arduino::_DistInit_(int pinTrig, int pinEcho)
 //----------------------------------------------------------------------------
 void MK_Arduino::_DistTest()
 {
-  digitalWrite(mPinDistTrigger, LOW); //浣庨珮浣庣數骞冲彂涓�涓煭鏃堕棿鑴夊啿鍘籘rigPin
+  digitalWrite(mPinDistTrigger, LOW); //娴ｅ酣鐝担搴ｆ暩楠炲啿褰傛稉锟芥稉顏嗙叚閺冨爼妫块懘澶婂暱閸樼睒rigPin
   delayMicroseconds(2);
   digitalWrite(mPinDistTrigger, HIGH);
   delayMicroseconds(10);
   digitalWrite(mPinDistTrigger, LOW);
 
-  float dist = pulseIn(mPinDistEcho, HIGH) / 58.0; //灏嗗洖娉㈡椂闂存崲绠楁垚cm
-  dist = (int(dist * 100.0)) / 100.0;       //淇濈暀涓や綅灏忔暟
+  float dist = pulseIn(mPinDistEcho, HIGH) / 58.0; //鐏忓棗娲栧▔銏℃闂傚瓨宕茬粻妤佸灇cm
+  dist = (int(dist * 100.0)) / 100.0;       //娣囨繄鏆�娑撱倓缍呯亸蹇旀殶
   if (2 <= dist && dist <= 400)
   {
     mDist = dist;

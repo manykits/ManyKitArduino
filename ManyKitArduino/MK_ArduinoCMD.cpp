@@ -272,7 +272,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_DHT_I]==cmdCH)
     {
-#if defined ManyKit_DHT
+#if defined MK_DHT
       int pin = _Str2Pin(mCmdParams[1]);
       _DHTInit(pin);
 #endif

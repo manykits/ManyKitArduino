@@ -53,7 +53,7 @@
 #endif
 
 #if defined MK_DHT
-#define ManyKit_DHTTYPE DHT11 
+#define MK_DHTTYPE DHT11 
 #include "MK_DHT.h"
 #endif
 
@@ -253,7 +253,7 @@ public:
   void _WeightTest(int index);
   float _GetWeight(int index);
 
-#if defined ManyKit_DHT
+#if defined MK_DHT
   void _DHTInit(MK_Pin pin);
   void _DHTSendTemperatureHumidity();
 #endif
@@ -424,7 +424,7 @@ private:
 #endif
 
 #if defined MK_DHT
-  ManyKit_DHT mDHT;
+  MK_DHT mDHT;
   bool mIsInitedDHT;
 #endif
 
