@@ -8,7 +8,7 @@
 void MK_Arduino::_DHTInit(MK_Pin pin)
 {
   int pinArduino = MK_Pin2Pin(pin);
-  mDHT = MK_DHT(pinArduino, MK_DHTTYPE);
+  mDHT = ManyKit_DHT(pinArduino, MK_DHTTYPE);
   mDHT.begin();
   mIsInitedDHT = true;
 }

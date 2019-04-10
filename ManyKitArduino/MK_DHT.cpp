@@ -10,11 +10,12 @@ written by Adafruit Industries
 
 #define MIN_INTERVAL 2000
 
-MK_DHT::MK_DHT()
+ManyKit_DHT::ManyKit_DHT()
 {
 }
 
-MK_DHT::MK_DHT(uint8_t pin, uint8_t type, uint8_t count) {
+ManyKit_DHT::ManyKit_DHT(uint8_t pin, uint8_t type, uint8_t count)
+{
   _pin = pin;
   _type = type;
   #ifdef __AVR
@@ -27,7 +28,8 @@ MK_DHT::MK_DHT(uint8_t pin, uint8_t type, uint8_t count) {
   // basd on the speed of the processor.
 }
 
-void MK_DHT::begin(void) {
+void ManyKit_DHT::begin(void)
+{
   // set up the pins!
   pinMode(_pin, INPUT_PULLUP);
   // Using this value makes sure that millis() - lastreadtime will be
@@ -38,7 +40,8 @@ void MK_DHT::begin(void) {
 }
 
 //boolean S == Scale.  True == Fahrenheit; False == Celcius
-float MK_DHT::readTemperature(bool S, bool force) {
+float ManyKit_DHT::readTemperature(bool S, bool force)
+{
   float f = NAN;
 
   if (read(force)) {
@@ -67,15 +70,18 @@ float MK_DHT::readTemperature(bool S, bool force) {
   return f;
 }
 
-float MK_DHT::convertCtoF(float c) {
+float ManyKit_DHT::convertCtoF(float c)
+{
   return c * 1.8 + 32;
 }
 
-float MK_DHT::convertFtoC(float f) {
+float ManyKit_DHT::convertFtoC(float f)
+{
   return (f - 32) * 0.55555;
 }
 
-float MK_DHT::readHumidity(bool force) {
+float ManyKit_DHT::readHumidity(bool force)
+{
   float f = NAN;
   if (read()) {
     switch (_type) {
@@ -95,7 +101,8 @@ float MK_DHT::readHumidity(bool force) {
 }
 
 //boolean isFahrenheit: True == Fahrenheit; False == Celcius
-float MK_DHT::computeHeatIndex(float temperature, float percentHumidity, bool isFahrenheit) {
+float ManyKit_DHT::computeHeatIndex(float temperature, float percentHumidity, bool isFahrenheit)
+{
   // Using both Rothfusz and Steadman's equations
   // http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
   float hi;
@@ -126,7 +133,8 @@ float MK_DHT::computeHeatIndex(float temperature, float percentHumidity, bool is
   return isFahrenheit ? hi : convertFtoC(hi);
 }
 
-boolean MK_DHT::read(bool force) {
+boolean ManyKit_DHT::read(bool force)
+{
   // Check if sensor was read less than two seconds ago and return early
   // to use last reading.
   uint32_t currenttime = millis();
@@ -240,7 +248,8 @@ boolean MK_DHT::read(bool force) {
 // This is adapted from Arduino's pulseInLong function (which is only available
 // in the very latest IDE versions):
 //   https://github.com/arduino/Arduino/blob/master/hardware/arduino/avr/cores/arduino/wiring_pulse.c
-uint32_t MK_DHT::expectPulse(bool level) {
+uint32_t ManyKit_DHT::expectPulse(bool level)
+{
   uint32_t count = 0;
   // On AVR platforms use direct GPIO port access as it's much faster and better
   // for catching pulses that are 10's of microseconds in length:

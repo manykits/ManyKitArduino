@@ -424,7 +424,7 @@ private:
 #endif
 
 #if defined MK_DHT
-  MK_DHT mDHT;
+  ManyKit_DHT mDHT;
   bool mIsInitedDHT;
 #endif
 
