@@ -9,7 +9,7 @@
 
 #define MK_PID
 
-#define MK_RCSWITCH
+//#define MK_RCSWITCH
 
 #define MK_DHT
 

@@ -92,4 +92,3 @@ bool  IRrecv::decodeSony (decode_results *results)
 	return true;
 }
 #endif
-

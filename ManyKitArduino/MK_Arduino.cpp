@@ -492,8 +492,8 @@ void MK_Arduino::_DistInit_(int pinTrig, int pinEcho)
 {
   mPinDistTrigger = pinTrig;
   mPinDistEcho = pinEcho;
-  pinMode(mPinDistTrigger, OUTPUT); // 定义超声波输出脚
-  pinMode(mPinDistEcho, INPUT);     // 定义超声波输入脚
+  pinMode(mPinDistTrigger, OUTPUT); // 瀹氫箟瓒呭０娉㈣緭鍑鸿剼
+  pinMode(mPinDistEcho, INPUT);     // 瀹氫箟瓒呭０娉㈣緭鍏ヨ剼
 
   mDist = 0.0f;
   mDistCheckLastTime = 0;
@@ -501,14 +501,14 @@ void MK_Arduino::_DistInit_(int pinTrig, int pinEcho)
 //----------------------------------------------------------------------------
 void MK_Arduino::_DistTest()
 {
-  digitalWrite(mPinDistTrigger, LOW); //低高低电平发一个短时间脉冲去TrigPin
+  digitalWrite(mPinDistTrigger, LOW); //浣庨珮浣庣數骞冲彂涓�涓煭鏃堕棿鑴夊啿鍘籘rigPin
   delayMicroseconds(2);
   digitalWrite(mPinDistTrigger, HIGH);
   delayMicroseconds(10);
   digitalWrite(mPinDistTrigger, LOW);
 
-  float dist = pulseIn(mPinDistEcho, HIGH) / 58.0; //将回波时间换算成cm
-  dist = (int(dist * 100.0)) / 100.0;       //保留两位小数
+  float dist = pulseIn(mPinDistEcho, HIGH) / 58.0; //灏嗗洖娉㈡椂闂存崲绠楁垚cm
+  dist = (int(dist * 100.0)) / 100.0;       //淇濈暀涓や綅灏忔暟
   if (2 <= dist && dist <= 400)
   {
     mDist = dist;

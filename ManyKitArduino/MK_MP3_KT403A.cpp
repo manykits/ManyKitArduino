@@ -76,7 +76,7 @@ void MP3::Specify_FolderMP3_Play(uint16_t index)
     delay(10);
 }
 */
-// 指定为"01"的文件夹，曲目为"001sdafas.mp3"
+// 鎸囧畾涓�"01"鐨勬枃浠跺す锛屾洸鐩负"001sdafas.mp3"
 void MP3::PlayFolderIndex(uint8_t folder, uint8_t index)
 {
     MK_Serial::write(0x7E);

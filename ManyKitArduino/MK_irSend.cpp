@@ -87,4 +87,3 @@ void IRsend::custom_delay_usec(unsigned long uSecs) {
   //  __asm__("nop\n\t"); // must have or compiler optimizes out
   //}
 }
-
