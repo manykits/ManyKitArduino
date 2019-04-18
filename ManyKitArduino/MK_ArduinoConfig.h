@@ -19,7 +19,7 @@
 
 #define MK_SEGMENT7
 
-#define MK_MP3
+//#define MK_MP3
 
 // weight
 //#define MK_XH711 1

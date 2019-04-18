@@ -39,7 +39,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int pin = _Str2Pin(mCmdParams[1]);
       int val = _Str2IO(mCmdParams[2]);
       int i = _Str2MK_Pin(mCmdParams[1]);
-      PinModes[i] = val;
+      PinModes[i] = (MK_PMode)val;
       pinMode(pin, val);
     }
     else if(sOptTypeVal[OT_DW]==cmdCH)
@@ -210,8 +210,10 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_MP3_DO]==cmdCH)
     {
-      int type = _Str2Int(mCmdParams[1]);
+   #if defined MK_MP3
+      MP3PlayType type = (MP3PlayType)_Str2Int(mCmdParams[1]);
       _MP3Do(type);
+   #endif
     }
     else if (sOptTypeVal[OT_MP3_PLAYFOLDER]==cmdCH)
     {
@@ -273,14 +275,14 @@ void MK_Arduino::OnCMD(String &cmdStr)
     else if (sOptTypeVal[OT_DHT_I]==cmdCH)
     {
 #if defined MK_DHT
-      int pin = _Str2Pin(mCmdParams[1]);
+      MK_Pin pin = (MK_Pin)_Str2Pin(mCmdParams[1]);
       _DHTInit(pin);
 #endif
     }
     else if (sOptTypeVal[OT_LEDSTRIP_I]==cmdCH)
     {
 #if defined MK_LEDSTRIP  
-      int pin = _Str2Pin(mCmdParams[1]);
+      MK_Pin pin = (MK_Pin)_Str2Pin(mCmdParams[1]);
       int num = _Str2Int(mCmdParams[2]);
       _RGBLEDInit(pin, num);
 #endif
@@ -400,9 +402,11 @@ MK_Pin MK_Arduino::_Str2MK_Pin(String &str)
 {
   int pinVal = atoi(str.c_str());
   if (0 <= pinVal && pinVal <= P_13)
-    return P_0 + pinVal;
+    return (MK_Pin)(P_0 + pinVal);
   else if (MK_A0 <= pinVal)
-    return (pinVal - MK_A0) + P_A0;
+    return (MK_Pin)((pinVal - MK_A0) + P_A0);
+    
+  return P_0;
 }
 //----------------------------------------------------------------------------
 bool MK_Arduino::_Str2Bool(String &str)

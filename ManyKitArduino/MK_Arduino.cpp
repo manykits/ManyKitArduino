@@ -114,7 +114,7 @@ void MK_Arduino::Init(bool isReset)
 
   for (int i = P_0; i <= P_MAX_TYPE; i++)
   {
-    PinModes[i] = 10;
+    PinModes[i] = PM_OUTPUT;
   }
 
   mpCMD = NULL;
