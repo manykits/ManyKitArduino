@@ -147,8 +147,8 @@ void MK_Arduino::Init(bool isReset)
 #if defined MK_PID
   mEncoder0PinALastL = 0;
   mEncoder0PinALastR = 0;
-  mDurationL = 0;
-  mDurationR = 0;
+  mDurationLTemp = 0;
+  mDurationRTemp = 0;
   mAbsDurationL = 0;
   mAbsDurationR = 0;
   mIsStopL = true;
@@ -369,15 +369,15 @@ void MK_Arduino::Tick()
     if (!mIsStopR)
       analogWrite(mPinRSpeed, (int)mValOutputR);
     
-    mAbsDurationL = abs(mDurationL);
-    mAbsDurationR = abs(mDurationR);
+    mAbsDurationL = abs(mDurationLTemp);
+    mAbsDurationR = abs(mDurationRTemp);
     
     result = mPID->Compute();
     resultR = mPID1->Compute();
     if(result)   
-      mDurationL = 0;
+      mDurationLTemp = 0;
     if(resultR)
-      mDurationR = 0;
+      mDurationRTemp = 0;
   }
 #endif
 
@@ -544,9 +544,9 @@ void wheelSpeedL()
   MK_Arduino::pxfarduino->mEncoder0PinALastL = lstate;
  
   if(!MK_Arduino::pxfarduino->mDirectionL) 
-    MK_Arduino::pxfarduino->mDurationL++;
+    MK_Arduino::pxfarduino->mDurationLTemp++;
   else  
-    MK_Arduino::pxfarduino->mDurationL--;
+    MK_Arduino::pxfarduino->mDurationLTemp--;
 }
 void wheelSpeedR()
 {
@@ -566,9 +566,9 @@ void wheelSpeedR()
   MK_Arduino::pxfarduino->mEncoder0PinALastR = lstate;
  
   if(!MK_Arduino::pxfarduino->mDirectionR)
-    MK_Arduino::pxfarduino->mDurationR++;
+    MK_Arduino::pxfarduino->mDurationRTemp++;
   else 
-   MK_Arduino::pxfarduino->mDurationR--;
+   MK_Arduino::pxfarduino->mDurationRTemp--;
 }
 #endif 
 //----------------------------------------------------------------------------
@@ -597,8 +597,8 @@ void MK_Arduino::_MotoSpeedInit(int encorderLA, int encorderLB,
     mPID1 = 0;
     mEncoder0PinALastL = 0;
     mEncoder0PinALastR = 0;
-    mDurationL = 0;
-    mDurationR = 0;
+    mDurationLTemp = 0;
+    mDurationRTemp = 0;
     mAbsDurationL = 0;
     mAbsDurationR = 0;
     mValOutputL = 0;
@@ -617,8 +617,8 @@ void MK_Arduino::_MotoSpeedInit(int encorderLA, int encorderLB,
 #if defined MK_PID
     mEncoder0PinALastL = 0;
     mEncoder0PinALastR = 0;
-    mDurationL = 0;
-    mDurationR = 0;
+    mDurationLTemp = 0;
+    mDurationRTemp = 0;
     mAbsDurationL = 0;
     mAbsDurationR = 0;
     mValOutputL = 0;

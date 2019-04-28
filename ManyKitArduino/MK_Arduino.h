@@ -358,8 +358,8 @@ public:
   PID *mPID1;
   byte mEncoder0PinALastL;
   byte mEncoder0PinALastR;
-  double mDurationL;
-  double mDurationR;
+  int mDurationLTemp;
+  int mDurationRTemp;
   double mAbsDurationL;
   double mAbsDurationR;
   double mValOutputL;

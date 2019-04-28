@@ -146,7 +146,7 @@ ISR (TIMER_INTR_NAME)
 					irparams.timer = 0;
 
 				} else {
-					// Gap just ended; Record mDurationL; Start recording transmission
+					// Gap just ended; Record mDurationLTemp; Start recording transmission
 					irparams.overflow                  = false;
 					irparams.rawlen                    = 0;
 					irparams.rawbuf[irparams.rawlen++] = irparams.timer;

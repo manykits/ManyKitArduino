@@ -117,7 +117,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_DST_T]==cmdCH)
     {
-      long mDurationL;
+      long mDurationLTemp;
       if(millis() - mDistCheckLastTime > 25)
       {
          mDistCheckLastTime = millis();
@@ -243,6 +243,10 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int pinRA = _Str2Pin(mCmdParams[3]);
       int pinRB = _Str2Pin(mCmdParams[4]);
       _MotoSpeedInit(pinLA, pinLB, pinRA, pinRB);
+    }
+    else if (sOptTypeVal[OT_RETURN_MOTOSPD] == cmdCH)
+    {
+
     }
     else if (sOptTypeVal[OT_HX711_I]==cmdCH)
     {
