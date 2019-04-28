@@ -27,7 +27,7 @@ void MK_Arduino::_IRSend(int val)
 #endif
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_IRRecv(int val)
+void MK_Arduino::_SendIRRecv(int val)
 {
 #if defined MK_IR
     unsigned char cmdCh = sOptTypeVal[OT_RETURN_IR];

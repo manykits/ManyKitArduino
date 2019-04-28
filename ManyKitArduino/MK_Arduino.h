@@ -324,6 +324,7 @@ public:
   void _MotoSpeedInit(int encorderLA, int encorderLB, int encorderRA, int encorderRB);
   void _LeftRun(int val, int spd);
   void _RightRun(int val, int spd);
+  void _SendPID();
   
 #if defined MK_SSD1306
   void _ScreenInit();
@@ -336,7 +337,7 @@ public:
   
   void _IRInit_(int pinR);
   void _IRSend(int val);
-  void _IRRecv(int val);
+  void _SendIRRecv(int val);
   void _Delay(float seconds);
   void _Loop();
   void _SendCMD(String &cmdStr);

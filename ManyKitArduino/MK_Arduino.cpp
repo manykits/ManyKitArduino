@@ -361,26 +361,6 @@ boolean resultR;
 //----------------------------------------------------------------------------
 void MK_Arduino::Tick()
 {
-#if defined MK_PID
-  if (mIsUseSpeedEncorder && mPID && mPID1)
-  {
-    if (!mIsStopL)
-      analogWrite(mPinLSpeed, (int)mValOutputL);
-    if (!mIsStopR)
-      analogWrite(mPinRSpeed, (int)mValOutputR);
-    
-    mAbsDurationL = abs(mDurationLTemp);
-    mAbsDurationR = abs(mDurationRTemp);
-    
-    result = mPID->Compute();
-    resultR = mPID1->Compute();
-    if(result)   
-      mDurationLTemp = 0;
-    if(resultR)
-      mDurationRTemp = 0;
-  }
-#endif
-
   if (millis()  - mLastSendVersionTime >= 2000)
   {
       mLastSendVersionTime = millis();
@@ -395,7 +375,29 @@ void MK_Arduino::Tick()
   {
     int val = iresultes.value;
     mIRrecv->resume();
-    _IRRecv(val);
+    _SendIRRecv(val);
+  }
+#endif
+
+#if defined MK_PID
+  if (mIsUseSpeedEncorder && mPID && mPID1)
+  {
+    if (!mIsStopL)
+      analogWrite(mPinLSpeed, (int)mValOutputL);
+    if (!mIsStopR)
+      analogWrite(mPinRSpeed, (int)mValOutputR);
+
+    mAbsDurationL = abs(mDurationLTemp);
+    mAbsDurationR = abs(mDurationRTemp);
+
+    result = mPID->Compute();
+    resultR = mPID1->Compute();
+    if (result)
+      mDurationLTemp = 0;
+    if (resultR)
+      mDurationRTemp = 0;
+
+    _SendPID();
   }
 #endif
 
@@ -570,7 +572,28 @@ void wheelSpeedR()
   else 
    MK_Arduino::pxfarduino->mDurationRTemp--;
 }
-#endif 
+#endif
+void MK_Arduino::_SendPID()
+{
+#if defined MK_PID
+  unsigned char cmdCh = sOptTypeVal[OT_RETURN_MOTOSPD];
+  char strCMDCh[32];
+  memset(strCMDCh, 0, 32);
+  itoa(cmdCh, strCMDCh, 10);
+
+  Serial.print("0000");
+  Serial.print(String(strCMDCh));
+  Serial.print(" ");
+  Serial.print(mAbsDurationL);
+  Serial.print(" ");
+  Serial.print(mDirectionL ? 1:0);
+  Serial.print(" ");
+  Serial.println(mAbsDurationR);
+  Serial.print(" ");
+  Serial.println(mDirectionR ? 1:0);
+
+#endif
+}
 //----------------------------------------------------------------------------
 void MK_Arduino::_MotoSpeedInit(int encorderLA, int encorderLB,
   int encorderRA, int encorderRB)
