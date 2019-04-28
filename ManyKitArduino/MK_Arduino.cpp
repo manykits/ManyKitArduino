@@ -632,14 +632,14 @@ void MK_Arduino::_MotoSpeedInit(int encorderLA, int encorderLB,
       mPID = 0;
     }
     mPID = new PID(&mAbsDurationL, &mValOutputL, &mSetPoint_L, Kp, Ki, Kd, DIRECT);
-  
+
     if (mPID1)
     {
       delete(mPID1);
       mPID1 = 0;
     }
     mPID1 = new PID(&mAbsDurationR, &mValOutputR, &mSetPoint_R, Kp, Ki, Kd, DIRECT);
-    
+
     mPID->SetMode(AUTOMATIC);
     mPID->SetSampleTime(100);
     mPID1->SetMode(AUTOMATIC);
