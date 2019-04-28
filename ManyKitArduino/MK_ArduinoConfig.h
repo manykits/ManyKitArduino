@@ -5,19 +5,19 @@
 
 #define MK_SERVO
 
-#define MK_IR 1
+//#define MK_IR 1
 
 #define MK_PID
 
 //#define MK_RCSWITCH
 
-#define MK_DHT
+//#define MK_DHT
 
-#define MK_LEDSTRIP
+//#define MK_LEDSTRIP
 
-#define MK_LEDMATRIX
+//#define MK_LEDMATRIX
 
-#define MK_SEGMENT7
+//#define MK_SEGMENT7
 
 //#define MK_MP3
 
