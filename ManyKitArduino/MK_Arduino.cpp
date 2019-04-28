@@ -107,6 +107,8 @@ MK_Arduino::MK_Arduino()
 //----------------------------------------------------------------------------
 void MK_Arduino::Init(bool isReset)
 {
+  RecvStr = "";
+
   mSettedTimeMe = 0;
   mLastSendVersionTime = 0;
 
@@ -138,9 +140,9 @@ void MK_Arduino::Init(bool isReset)
 
   mMotoMode = MM_BOARD;
   mPinEncroderLA = 2;
-  mPinEncroderLB = 10;
+  mPinEncroderLB = 8;
   mPinEncroderRA = 3;
-  mPinEncroderRB = 11;
+  mPinEncroderRB = 9;
 
 #if defined MK_PID
   mEncoder0PinALastL = 0;
@@ -189,13 +191,13 @@ void MK_Arduino::Init(bool isReset)
 #endif
 
 #if defined MK_PID
-  if (mPID)
+  if (isReset && mPID)
   {
     delete(mPID);
   }
   mPID = 0;
 
-  if (mPID1)
+  if (isReset && mPID1)
   {
     delete(mPID1);
   }
@@ -273,73 +275,10 @@ float MK_Arduino::_GetDist()
   return mDist;
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_VehicleSpeedEncorderInit(MK_Pin encorderLA, MK_Pin encorderLB, MK_Pin encorderRA, MK_Pin encorderRB)
-{
-  int pinLA = MK_Pin2Pin(encorderLA);
-  int pinLB = MK_Pin2Pin(encorderLB);
-  int pinRA = MK_Pin2Pin(encorderRA);
-  int pinRB = MK_Pin2Pin(encorderRB);
-  _MotoSpeedInit(pinLA, pinLB, pinRA, pinRB);
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_VehicleRun(int index, MK_DirectionType dir, int speed)
-{
-  if (0==dir)
-    speed = 0;
-
-  if (0 == index)
-    _LeftRun((int)dir, speed);
-  else
-    _RightRun((int)dir, speed);
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_VehicleSimpleRun(MK_SimpleDirectionType dir, int spd)
-{
-  if (0 == dir)
-  {
-    spd = 0;
-    _LeftRun(0, spd);
-    _RightRun(0, spd);
-  }
-  else if (1 == dir)
-  {
-    _LeftRun(1, spd);
-    _RightRun(1, spd);
-  }
-  else if (2 == dir)
-  {
-    _LeftRun(2, spd);
-    _RightRun(2, spd);
-  }
-  else if (3 == dir)
-  {
-    _LeftRun(2, spd);
-    _RightRun(1, spd);
-  }
-  else if (4 == dir)
-  {
-    _LeftRun(1, spd);
-    _RightRun(2, spd);
-  }
-}
-//----------------------------------------------------------------------------
 void MK_Arduino::_VehicleStop()
 {
   _LeftRun(0, 0);
   _RightRun(0, 0);
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_WeightInit(int index, MK_Pin pinR, MK_Pin pinT)
-{
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_WeightTest(int index)
-{ 
-}
-//----------------------------------------------------------------------------
-float MK_Arduino::_GetWeight(int index)
-{
-  return 0.0f;
 }
 //----------------------------------------------------------------------------
 String MK_Arduino::I2Str(int val)
@@ -442,7 +381,7 @@ void MK_Arduino::Tick()
   }
 #endif
 
-  if (millis()  - mLastSendVersionTime >= 1000)
+  if (millis()  - mLastSendVersionTime >= 2000)
   {
       mLastSendVersionTime = millis();
       _SendVersion();
@@ -584,12 +523,10 @@ void MK_Arduino::_MotoInit298N(int pinL, int pinL1, int pinLS, int pinR,
   mRoll = 0.0f;
   mYaw = 0.0f;
 #endif
-
- //_MotoSpeedInit(2, 10, 3, 11);
 }
 //----------------------------------------------------------------------------
 #if defined MK_PID
-void wheelSpeed()
+void wheelSpeedL()
 {
   int lstate = digitalRead(MK_Arduino::pxfarduino->mPinEncroderLA);
   if((MK_Arduino::pxfarduino->mEncoder0PinALastL == LOW) && lstate==HIGH)
@@ -692,12 +629,14 @@ void MK_Arduino::_MotoSpeedInit(int encorderLA, int encorderLB,
     if (mPID)
     {
       delete(mPID);
+      mPID = 0;
     }
     mPID = new PID(&mAbsDurationL, &mValOutputL, &mSetPoint_L, Kp, Ki, Kd, DIRECT);
   
     if (mPID1)
     {
       delete(mPID1);
+      mPID1 = 0;
     }
     mPID1 = new PID(&mAbsDurationR, &mValOutputR, &mSetPoint_R, Kp, Ki, Kd, DIRECT);
     
@@ -708,7 +647,7 @@ void MK_Arduino::_MotoSpeedInit(int encorderLA, int encorderLB,
     
     mDirectionL = true;
     pinMode(mPinEncroderLB, INPUT);  
-    attachInterrupt(0, wheelSpeed, CHANGE);
+    attachInterrupt(0, wheelSpeedL, CHANGE);
   
     mDirectionR = true;
     pinMode(mPinEncroderRB, INPUT);  
@@ -717,18 +656,12 @@ void MK_Arduino::_MotoSpeedInit(int encorderLA, int encorderLB,
   }
 }
 //----------------------------------------------------------------------------
-float MK_Arduino::_VehicleGetSpeed(int index)
-{
-  return 0.0f;
-}
-//----------------------------------------------------------------------------
 void MK_Arduino::_LeftRun(int val, int spd)
 {
   if (MM_BOARD == mMotoMode)
   {
     if (mIsUseSpeedEncorder)
     {
-
       mSetPoint_L = spd;
 
       if (0 == val)

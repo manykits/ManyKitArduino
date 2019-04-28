@@ -227,6 +227,8 @@ public:
   static char PinStr[P_MAX_TYPE];
   static unsigned char sOptTypeVal[OT_MAX_TYPE];
 
+  String RecvStr;
+
   // cmds process
   void OnCMDGroup(String &cmdStr);
   void OnCMD(String &cmdStr);
@@ -244,14 +246,7 @@ public:
   void _ServerWrite(int index, int val);
   void _DistInit(MK_Pin trigger, MK_Pin echo);
   float _GetDist();
-  void _VehicleSpeedEncorderInit(MK_Pin encorderLA, MK_Pin encorderLB, MK_Pin encorderRA, MK_Pin encorderRB);
-  void _VehicleRun(int index, MK_DirectionType dir, int speed);
-  void _VehicleSimpleRun(MK_SimpleDirectionType dir, int speed);
-  float _VehicleGetSpeed(int index);
   void _VehicleStop();
-  void _WeightInit(int index, MK_Pin pinR, MK_Pin pinT);
-  void _WeightTest(int index);
-  float _GetWeight(int index);
 
 #if defined MK_DHT
   void _DHTInit(MK_Pin pin);

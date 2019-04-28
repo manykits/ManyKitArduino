@@ -3,7 +3,7 @@
 #include "MK_Arduino.h"
 
 MK_Arduino manykit;
-
+ 
 void setup() 
 { 
   // Serial
@@ -20,7 +20,6 @@ void setup()
 #endif
 }
 
-String recvStr;
 void loop()
 {   
   while (Serial.available())
@@ -29,18 +28,18 @@ void loop()
     
     if ('\n' == c)
     {
-      if (recvStr.length() > 0)
+      if (manykit.RecvStr.length() > 0)
       {
         // to compatile with PHOENIXEngine
         // 2 for length,2 for id
-        String cmdStr = recvStr.substring(4);
+        String cmdStr = manykit.RecvStr.substring(4);
         manykit.OnCMD(cmdStr);
       }
-      recvStr = "";
+      manykit.RecvStr = "";
     }
     else
     {
-      recvStr += c;
+      manykit.RecvStr += c;
     }
   }
 

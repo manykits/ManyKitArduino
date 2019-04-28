@@ -258,8 +258,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
       _HXSend(index, val);
     }
     else if (sOptTypeVal[OT_RC_INIT]==cmdCH)
-    {
-      
+    {      
 #if defined MK_RCSWITCH
      int pin = _Str2Pin(mCmdParams[1]);
     _RCInit(pin);
