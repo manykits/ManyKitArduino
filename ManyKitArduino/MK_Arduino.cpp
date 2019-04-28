@@ -111,8 +111,9 @@ void MK_Arduino::Init(bool isReset)
 
   mSettedTimeMe = 0;
   mLastSendVersionTime = 0;
+  mLastSendGeneralTime = 0;
 
-  digitalWrite(13, LOW);
+      digitalWrite(13, LOW);
 
   for (int i = P_0; i <= P_MAX_TYPE; i++)
   {
@@ -396,10 +397,14 @@ void MK_Arduino::Tick()
       mDurationLTemp = 0;
     if (resultR)
       mDurationRTemp = 0;
-
-    _SendPID();
   }
 #endif
+
+  if (millis() - mLastSendGeneralTime >= 100)
+  {
+    mLastSendGeneralTime = millis();
+    _SendPID();
+  }
 
 #if defined MK_RCSWITCH
  if (mRCSwitch.available()) 

@@ -376,6 +376,7 @@ public:
 private:
   int mNetID;
   unsigned long mLastSendVersionTime;
+  unsigned long mLastSendGeneralTime;
   Timer mTimer;
 
 #if defined MK_SERVO
