@@ -368,6 +368,41 @@ void MK_Arduino::OnCMD(String &cmdStr)
       _LEDMatrixLightPos(x,y,width,onOff);
 #endif
     }
+    else if (sOptTypeVal[OT_STEPMOTO_I]==cmdCH)
+    {
+      int index = _Str2Int(mCmdParams[1]);
+      int pinVCC = _Str2Pin(mCmdParams[2]);
+      int pinPLS = _Str2Pin(mCmdParams[3]);
+      int pinDIR = _Str2Pin(mCmdParams[4]);
+      int pinEnable = _Str2Pin(mCmdParams[5]);
+
+      _StepMotoInit(index, pinVCC, pinPLS, pinDIR, pinEnable);
+
+  void _StepMotoEnable(int index, bool enable);
+  void _StepMotoDir(int index, bool forward);
+  void _StepMotoStep(int index, int delay);
+    }
+    else if (sOptTypeVal[OT_STEPMOTO_ENABLE]==cmdCH)
+    {
+      int index = _Str2Int(mCmdParams[1]);
+      bool enable = _Str2Bool(mCmdParams[2]);
+
+      _StepMotoEnable(index, enable);
+    }
+    else if (sOptTypeVal[OT_STEPMOTO_DIR]==cmdCH)
+    {
+      int index = _Str2Int(mCmdParams[1]);
+      bool bDir = _Str2Bool(mCmdParams[2]);
+
+      _StepMotoDir(index, bDir);
+    }
+    else if (sOptTypeVal[OT_STEPMOTO_STEP]==cmdCH)
+    {
+      int index = _Str2Int(mCmdParams[1]);
+      int delayVal = _Str2Int(mCmdParams[2]);
+
+      _StepMotoStep(index, delayVal);
+    }
   }
 }
 //----------------------------------------------------------------------------

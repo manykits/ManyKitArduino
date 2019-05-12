@@ -188,6 +188,10 @@ enum OptionType
   OT_LEDMATRIX_BRIGHTNESS,
   OT_LEDMATRIX_CLEARSCREEN,
   OT_LEDMATRIX_LIGHTAT,
+  OT_STEPMOTO_I,
+  OT_STEPMOTO_ENABLE,
+  OT_STEPMOTO_DIR,
+  OT_STEPMOTO_STEP,
   OT_MC_INTERNAL_LIGHT, // makerclock
   OT_MC_LIGHT,
   OT_MC_SEGMENT,
@@ -345,6 +349,10 @@ public:
   float _ReadHX711(int index);
   void _HXSend(int index, float val);
   void _SetTime();
+  void _StepMotoInit(int index, int pinVCC, int pincPLS, int pinDir, int pinEnable);
+  void _StepMotoEnable(int index, bool enable);
+  void _StepMotoDir(int index, bool forward);
+  void _StepMotoStep(int index, int delay);
 
 public:
   int mPinEncroderLA;
@@ -436,6 +444,12 @@ private:
 #if defined MK_MP3
   MP3 mMP3;
 #endif
+
+  #define NumMaxStepMoto 4
+  int mStepMotoVCC[NumMaxStepMoto];
+  int mStepMotoPLS[NumMaxStepMoto];
+  int mStepMotoDir[NumMaxStepMoto];
+  int mStepMotoEnable[NumMaxStepMoto];
 
 public:
   void _InitAxis();

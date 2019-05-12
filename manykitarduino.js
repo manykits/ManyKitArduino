@@ -47,10 +47,14 @@
 // "44", //OT_SEGMENT_BRIGHTNESS
 // "45", //OT_SEGMENT_CLEAR
 // "46", //OT_SEGMENT_DISPLAY
-// "47", // OT_LEDMATRIX_I
-// "48", // OT_LEDMATRIX_BRIGHTNESS
-// "49", // OT_LEDMATRIX_CLEARSCREEN
-// "50", // OT_LEDMATRIX_LIGHTAT
+// "47", //OT_LEDMATRIX_I
+// "48", //OT_LEDMATRIX_BRIGHTNESS
+// "49", //OT_LEDMATRIX_CLEARSCREEN
+// "50", //OT_LEDMATRIX_LIGHTAT
+// "51", //OT_STEPMOTO_I
+// "52", //OT_STEPMOTO_ENABLE
+// "53", //OT_STEPMOTO_DIR
+// "54", //OT_STEPMOTO_STEP
 // "150", //OT_MC_INTERNAL_LIGHT
 // "151", //OT_MC_LIGHT
 // "152", //OT_MC_SEGMENT
@@ -953,4 +957,41 @@ ManyKitArduino = module.exports = function (port, options, callback)
         var cntStr = "0000" + "50" + " " + x + " " + y + " " + width + " " + boolToArduino(onOff) + "\n";
         writeData(this,cntStr);
     } 
+	
+	// index
+	// pinVCC
+    // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
+    // pincPLS
+    // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
+	// pinDir
+    // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
+	// pinEnable
+    // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
+    ManyKitArduino.prototype.StepMotoInit = function (index, pinVCC, pincPLS, pinDir, pinEnable) {
+        // OT_STEPMOTO_I
+        //var cntStr = "51" + "," + index + "," + pinVCC + "," + pincPLS + "," + pinDir + "," + pinEnable;
+        var cntStr = "0000" + "51" + " " + index + " " + pinToArduino(pinVCC) + " " + pinToArduino(pincPLS) + " " + pinToArduino(pinDir) + " " + pinToArduino(pinEnable) + "\n";
+        writeData(this,cntStr);
+    }
+	
+	ManyKitArduino.prototype.StepMotoEnable = function (index, enable) {
+        // OT_STEPMOTO_ENABLE
+        //var cntStr = "52" + "," + index + "," + enable;
+        var cntStr = "0000" + "52" + " " + index + " " + boolToArduino(enable) + "\n";;
+        writeData(this,cntStr);
+    }
+	
+	ManyKitArduino.prototype.StepMotoDir = function (index, forward) {
+        // OT_STEPMOTO_DIR
+        //var cntStr = "53" + "," + index + "," + forward;
+        var cntStr = "0000" + "53" + " " + index + " " + boolToArduino(forward) + "\n";;
+        writeData(this,cntStr);
+    }
+	
+	ManyKitArduino.prototype.StepMotoStep = function (index, delay) {
+        // OT_STEPMOTO_STEP
+        //var cntStr = "54" + "," + index + "," + delay;
+        var cntStr = "0000" + "54" + " " + index + " " + delay + "\n";;
+        writeData(this,cntStr);
+    }
 }

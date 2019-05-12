@@ -85,6 +85,10 @@ unsigned char MK_Arduino::sOptTypeVal[OT_MAX_TYPE] =
     48, //OT_LEDMATRIX_BRIGHTNESS
     49, //OT_LEDMATRIX_CLEARSCREEN
     50, //OT_LEDMATRIX_LIGHTAT
+    51, //OT_STEPMOTO_I
+    52, //OT_STEPMOTO_ENABLE
+    53, //OT_STEPMOTO_DIR
+    54, //OT_STEPMOTO_STEP
     150, //OT_MC_INTERNAL_LIGHT
     151, //OT_MC_LIGHT
     152, //OT_MC_SEGMENT
@@ -174,6 +178,14 @@ void MK_Arduino::Init(bool isReset)
   }
   mMP3DFSerial = 0;
 #endif
+
+  for (int i=0; i<NumMaxStepMoto; i++)
+  {
+    mStepMotoVCC[i] = 0;
+    mStepMotoPLS[i] = 0;
+    mStepMotoDir[i] = 0;
+    mStepMotoEnable[i] = 0;
+  }
 
 #if defined MK_IR
   if (isReset && mIRrecv)
@@ -1035,5 +1047,54 @@ void MK_Arduino::_SendCMD(String &cmdStr)
   //*(unsigned short *)(&lastCmdStr[0]) = (unsigned short)allLength; // length
   //*(unsigned short *)(&lastCmdStr[2]) = (unsigned short)GeneralServerMsgID; // id
   Serial.println(lastCmdStr);
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::_StepMotoInit(int index, int pinVCC, int pincPLS, 
+  int pinDir, int pinEnable)
+{
+  if (0<=index && index<NumMaxStepMoto)
+  {
+    mStepMotoVCC[index] = pinVCC;
+    mStepMotoPLS[index] = pincPLS;
+    mStepMotoDir[index] = pinDir;
+    mStepMotoEnable[index] = pinEnable;
+
+    pinMode(pinVCC, OUTPUT);
+    pinMode(pincPLS, OUTPUT);
+    pinMode(pinDir, OUTPUT);
+    pinMode(pinEnable, OUTPUT);
+
+    digitalWrite(pinVCC, HIGH);
+    digitalWrite(pincPLS, HIGH);
+    digitalWrite(pinDir, HIGH);
+    digitalWrite(pinEnable, HIGH);
+  }
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::_StepMotoEnable(int index, bool enable)
+{
+  if (0<=index && index<NumMaxStepMoto)
+  {
+    digitalWrite(mStepMotoEnable[index], enable?HIGH:LOW);
+  }
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::_StepMotoDir(int index, bool forward)
+{
+  if (0<=index && index<NumMaxStepMoto)
+  {
+    digitalWrite(mStepMotoDir[index], forward?HIGH:LOW);
+  }
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::_StepMotoStep(int index, int delay)
+{
+  if (0<=index && index<NumMaxStepMoto)
+  {
+    digitalWrite(mStepMotoPLS[index], HIGH);
+    delayMicroseconds(delay);
+    digitalWrite(mStepMotoPLS[index], LOW);
+    delayMicroseconds(delay);
+  }
 }
 //----------------------------------------------------------------------------
