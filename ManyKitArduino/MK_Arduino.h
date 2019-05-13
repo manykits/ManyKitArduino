@@ -352,7 +352,7 @@ public:
   void _StepMotoInit(int index, int pinVCC, int pincPLS, int pinDir, int pinEnable);
   void _StepMotoEnable(int index, bool enable);
   void _StepMotoDir(int index, bool forward);
-  void _StepMotoStep(int index, int delay);
+  void _StepMotoStep(int index, int delayVal);
 
 public:
   int mPinEncroderLA;
@@ -446,10 +446,11 @@ private:
 #endif
 
   #define NumMaxStepMoto 4
-  int mStepMotoVCC[NumMaxStepMoto];
-  int mStepMotoPLS[NumMaxStepMoto];
-  int mStepMotoDir[NumMaxStepMoto];
-  int mStepMotoEnable[NumMaxStepMoto];
+  int mStepMotoVCCPin[NumMaxStepMoto];
+  int mStepMotoPLSPin[NumMaxStepMoto];
+  int mStepMotoDirPin[NumMaxStepMoto];
+  int mStepMotoEnablePin[NumMaxStepMoto];
+  bool mStepMotoEnable[NumMaxStepMoto];
   int mStepMotoRunDelay[NumMaxStepMoto];
 
 public:

@@ -377,10 +377,6 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int pinEnable = _Str2Pin(mCmdParams[5]);
 
       _StepMotoInit(index, pinVCC, pinPLS, pinDIR, pinEnable);
-
-  void _StepMotoEnable(int index, bool enable);
-  void _StepMotoDir(int index, bool forward);
-  void _StepMotoStep(int index, int delay);
     }
     else if (sOptTypeVal[OT_STEPMOTO_ENABLE]==cmdCH)
     {
