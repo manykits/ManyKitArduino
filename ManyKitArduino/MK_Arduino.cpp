@@ -117,7 +117,7 @@ void MK_Arduino::Init(bool isReset)
   mLastSendVersionTime = 0;
   mLastSendGeneralTime = 0;
 
-      digitalWrite(13, LOW);
+  digitalWrite(13, LOW);
 
   for (int i = P_0; i <= P_MAX_TYPE; i++)
   {
@@ -185,6 +185,7 @@ void MK_Arduino::Init(bool isReset)
     mStepMotoPLS[i] = 0;
     mStepMotoDir[i] = 0;
     mStepMotoEnable[i] = 0;
+    mStepMotoRunDelay[i] = 0;
   }
 
 #if defined MK_IR
@@ -381,6 +382,17 @@ void MK_Arduino::Tick()
   }
 
   mTimer.update();
+
+  for (int i=0; i<NumMaxStepMoto; i++)
+  {
+    if(mStepMotoEnable[i] > 0)
+    {
+      digitalWrite(mStepMotoPLS[i], HIGH);
+      delayMicroseconds(mStepMotoRunDelay[i]);
+      digitalWrite(mStepMotoPLS[i], LOW);
+      delayMicroseconds(mStepMotoRunDelay[i]);
+    }
+  }
 
 #if defined MK_IR
   decode_results iresultes;

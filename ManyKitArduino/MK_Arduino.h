@@ -450,6 +450,7 @@ private:
   int mStepMotoPLS[NumMaxStepMoto];
   int mStepMotoDir[NumMaxStepMoto];
   int mStepMotoEnable[NumMaxStepMoto];
+  int mStepMotoRunDelay[NumMaxStepMoto];
 
 public:
   void _InitAxis();
