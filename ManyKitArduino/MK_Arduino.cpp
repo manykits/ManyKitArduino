@@ -179,6 +179,7 @@ void MK_Arduino::Init(bool isReset)
   mMP3DFSerial = 0;
 #endif
 
+#if defined MK_STEPMOTO
   for (int i=0; i<NumMaxStepMoto; i++)
   {
     mStepMotoVCCPin[i] = 0;
@@ -189,6 +190,7 @@ void MK_Arduino::Init(bool isReset)
     mStepMotoEnable[i] = false;
     mStepMotoRunDelay[i] = 100;
   }
+#endif
 
 #if defined MK_IR
   if (isReset && mIRrecv)
@@ -385,6 +387,7 @@ void MK_Arduino::Tick()
 
   mTimer.update();
 
+#if defined MK_STEPMOTO
   for (int i=0; i<NumMaxStepMoto; i++)
   {
     if(mStepMotoEnable[i])
@@ -395,6 +398,7 @@ void MK_Arduino::Tick()
       delayMicroseconds(mStepMotoRunDelay[i]);
     }
   }
+#endif
 
 #if defined MK_IR
   decode_results iresultes;
@@ -1063,6 +1067,7 @@ void MK_Arduino::_SendCMD(String &cmdStr)
   Serial.println(lastCmdStr);
 }
 //----------------------------------------------------------------------------
+#if defined MK_STEPMOTO
 void MK_Arduino::_StepMotoInit(int index, int pinVCC, int pincPLS, 
   int pinDir, int pinEnable)
 {
@@ -1114,3 +1119,4 @@ void MK_Arduino::_StepMotoStep(int index, int delayVal)
   }
 }
 //----------------------------------------------------------------------------
+#endif

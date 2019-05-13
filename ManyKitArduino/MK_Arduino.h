@@ -349,10 +349,13 @@ public:
   float _ReadHX711(int index);
   void _HXSend(int index, float val);
   void _SetTime();
+  
+#if defined MK_STEPMOTO
   void _StepMotoInit(int index, int pinVCC, int pincPLS, int pinDir, int pinEnable);
   void _StepMotoEnable(int index, bool enable);
   void _StepMotoDir(int index, bool forward);
   void _StepMotoStep(int index, int delayVal);
+#endif
 
 public:
   int mPinEncroderLA;
@@ -445,6 +448,7 @@ private:
   MP3 mMP3;
 #endif
 
+#if defined MK_STEPMOTO
   #define NumMaxStepMoto 4
   int mStepMotoVCCPin[NumMaxStepMoto];
   int mStepMotoPLSPin[NumMaxStepMoto];
@@ -452,6 +456,7 @@ private:
   int mStepMotoEnablePin[NumMaxStepMoto];
   bool mStepMotoEnable[NumMaxStepMoto];
   int mStepMotoRunDelay[NumMaxStepMoto];
+#endif
 
 public:
   void _InitAxis();

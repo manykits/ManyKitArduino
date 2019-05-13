@@ -370,6 +370,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_STEPMOTO_I]==cmdCH)
     {
+#if defined MK_STEPMOTO
       int index = _Str2Int(mCmdParams[1]);
       int pinVCC = _Str2Pin(mCmdParams[2]);
       int pinPLS = _Str2Pin(mCmdParams[3]);
@@ -377,27 +378,35 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int pinEnable = _Str2Pin(mCmdParams[5]);
 
       _StepMotoInit(index, pinVCC, pinPLS, pinDIR, pinEnable);
+
+#endif
     }
     else if (sOptTypeVal[OT_STEPMOTO_ENABLE]==cmdCH)
     {
+#if defined MK_STEPMOTO
       int index = _Str2Int(mCmdParams[1]);
       bool enable = _Str2Bool(mCmdParams[2]);
 
       _StepMotoEnable(index, enable);
+#endif
     }
     else if (sOptTypeVal[OT_STEPMOTO_DIR]==cmdCH)
     {
+#if defined MK_STEPMOTO
       int index = _Str2Int(mCmdParams[1]);
       bool bDir = _Str2Bool(mCmdParams[2]);
 
       _StepMotoDir(index, bDir);
+#endif
     }
     else if (sOptTypeVal[OT_STEPMOTO_STEP]==cmdCH)
     {
+#if defined MK_STEPMOTO
       int index = _Str2Int(mCmdParams[1]);
       int delayVal = _Str2Int(mCmdParams[2]);
 
       _StepMotoStep(index, delayVal);
+#endif
     }
   }
 }
