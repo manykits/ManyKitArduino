@@ -456,6 +456,8 @@ private:
   int mStepMotoEnablePin[NumMaxStepMoto];
   bool mStepMotoEnable[NumMaxStepMoto];
   int mStepMotoRunDelay[NumMaxStepMoto];
+  unsigned long mStepMotoRunTick[NumMaxStepMoto];
+  int mStepMotoRunVal[NumMaxStepMoto];
 #endif
 
 public:

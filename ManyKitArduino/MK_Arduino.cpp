@@ -379,9 +379,10 @@ boolean resultR;
 //----------------------------------------------------------------------------
 void MK_Arduino::Tick()
 {
-  if (millis()  - mLastSendVersionTime >= 2000)
+  unsigned long tick = millis();       
+  if (tick - mLastSendVersionTime >= 2000)
   {
-      mLastSendVersionTime = millis();
+      mLastSendVersionTime =tick;
       _SendVersion();
   }
 
@@ -392,6 +393,27 @@ void MK_Arduino::Tick()
   {
     if(mStepMotoEnable[i])
     {
+      /*
+      unsigned long stp = (millis() - mStepMotoRunTick[i])*1000;
+      if (stp >= 10)
+      {
+        if (0 == mStepMotoRunVal[i])
+        {
+          digitalWrite(mStepMotoPLSPin[i], HIGH);
+          mStepMotoRunVal[i] = 1;
+        }
+        else if (1 == mStepMotoRunVal[i])
+        {
+          digitalWrite(mStepMotoPLSPin[i], LOW);
+          mStepMotoRunVal[i] = 0;  
+        }
+
+        mStepMotoRunTick[i] = tick;
+      }
+      */
+      
+     //analogWrite(mStepMotoPLSPin[i], mStepMotoRunDelay[i]);
+      
       digitalWrite(mStepMotoPLSPin[i], HIGH);
       delayMicroseconds(mStepMotoRunDelay[i]);
       digitalWrite(mStepMotoPLSPin[i], LOW);
@@ -1080,6 +1102,8 @@ void MK_Arduino::_StepMotoInit(int index, int pinVCC, int pincPLS,
     
     mStepMotoEnable[index] = false;
     mStepMotoRunDelay[index] = 100;
+    mStepMotoRunTick[index] = millis();
+    mStepMotoRunVal[index] = 0;
 
     pinMode(pinVCC, OUTPUT);
     pinMode(pincPLS, OUTPUT);
