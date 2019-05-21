@@ -211,7 +211,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
     else if (sOptTypeVal[OT_MP3_DO]==cmdCH)
     {
    #if defined MK_MP3
-      MP3PlayType type = (MP3PlayType)_Str2Int(mCmdParams[1]);
+      Mp3PlayType type = (Mp3PlayType)_Str2Int(mCmdParams[1]);
       _MP3Do(type);
    #endif
     }
