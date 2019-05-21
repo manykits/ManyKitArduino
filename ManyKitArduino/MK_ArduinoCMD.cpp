@@ -414,8 +414,8 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int addr = _Str2Int(mCmdParams[1]);
       int numCols = _Str2Int(mCmdParams[2]);
       int numRows = _Str2Int(mCmdParams[3]);
-      _LCI2C_Init();
-     // _LCI2C_Init(addr, numCols, numRows);
+      
+      _LCI2C_Init(addr, numCols, numRows);
 #endif
     }
     else if (sOptTypeVal[OT_LCI2C_DO] == cmdCH)
@@ -443,7 +443,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
     else if (sOptTypeVal[OT_LCI2C_PRINT] == cmdCH)
     {
 #if defined MK_SCREEN_I2C
-      String strVal = mCmdParams[1];
+      String strVal = cmdStr.substring(3);
       _LCI2C_Print(strVal);
 #endif
     }
