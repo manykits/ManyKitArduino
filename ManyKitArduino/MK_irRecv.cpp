@@ -1,6 +1,8 @@
 #include "MK_IRremote.h"
 #include "MK_IRremoteInt.h"
 
+#if defined MK_IR
+
 #ifdef IR_TIMER_USE_ESP32
 hw_timer_t *timer;
 void IRTimer(); // defined in IRremote.cpp
@@ -233,3 +235,5 @@ long  IRrecv::decodeHash (decode_results *results)
 
 	return true;
 }
+
+#endif

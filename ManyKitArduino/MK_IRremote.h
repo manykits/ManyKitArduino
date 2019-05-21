@@ -18,6 +18,10 @@
 #ifndef MK_IRremote_h
 #define MK_IRremote_h
 
+#include "MK_ArduinoConfig.h"
+
+#if defined MK_IR
+
 //------------------------------------------------------------------------------
 // The ISR header contains several useful macros the user may wish to use
 //
@@ -345,5 +349,7 @@ class IRsend
 			void  sendLegoPowerFunctions (uint16_t data, bool repeat = true) ;
 #		endif
 } ;
+
+#endif
 
 #endif

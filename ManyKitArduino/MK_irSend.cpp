@@ -1,6 +1,8 @@
 #include "MK_IRremote.h"
 #include "MK_IRremoteInt.h"
 
+#if defined MK_IR
+
 //+=============================================================================
 void  IRsend::sendRaw (const unsigned int buf[],  unsigned int len,  unsigned int hz)
 {
@@ -87,3 +89,5 @@ void IRsend::custom_delay_usec(unsigned long uSecs) {
   //  __asm__("nop\n\t"); // must have or compiler optimizes out
   //}
 }
+
+#endif

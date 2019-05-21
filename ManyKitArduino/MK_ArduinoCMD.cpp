@@ -408,6 +408,59 @@ void MK_Arduino::OnCMD(String &cmdStr)
       _StepMotoStep(index, delayVal);
 #endif
     }
+    else if (sOptTypeVal[OT_LCI2C_INIT] == cmdCH)
+    {
+#if defined MK_SCREEN_I2C
+      int addr = _Str2Int(mCmdParams[1]);
+      int numCols = _Str2Int(mCmdParams[2]);
+      int numRows = _Str2Int(mCmdParams[3]);
+      _LCI2C_Init(addr, numCols, numRows);
+#endif
+    }
+    else if (sOptTypeVal[OT_LCI2C_DO] == cmdCH)
+    {
+#if defined MK_SCREEN_I2C
+      SCREEN_I2C_DoType doType = (SCREEN_I2C_DoType)_Str2Int(mCmdParams[1]);
+      _LCI2C_Do(doType);
+#endif
+    }
+    else if (sOptTypeVal[OT_LCI2C_SETCURSOR] == cmdCH)
+    {
+#if defined MK_SCREEN_I2C
+      int col = _Str2Int(mCmdParams[1]);
+      int row = _Str2Int(mCmdParams[2]);
+      _LCI2C_SetCursor(col, row);
+#endif
+    }
+    else if (sOptTypeVal[OT_LCI2C_SETBACKLIGHT] == cmdCH)
+    {
+#if defined MK_SCREEN_I2C
+      int col = _Str2Int(mCmdParams[1]);
+      int row = _Str2Int(mCmdParams[2]);
+      _LCI2C_SetCursor(col, row);
+#endif
+    }
+    else if (sOptTypeVal[OT_LCI2C_PRINT] == cmdCH)
+    {
+#if defined MK_SCREEN_I2C
+      int val = _Str2Int(mCmdParams[1]);
+      _LCI2C_SetBackLight(val);
+#endif
+    }
+    else if (sOptTypeVal[OT_LCI2C_PRINT] == cmdCH)
+    {
+#if defined MK_SCREEN_I2C
+      String val = mCmdParams[1];
+      _LCI2C_Print(val);
+#endif
+    }
+    else if (sOptTypeVal[OT_LCI2C_PRINTBYTE] == cmdCH)
+    {
+#if defined MK_SCREEN_I2C
+      int val = _Str2Int(mCmdParams[1]);
+      _LCI2C_PrintByte(val);
+#endif
+    }
   }
 }
 //----------------------------------------------------------------------------

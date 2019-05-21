@@ -1,6 +1,8 @@
 #include "MK_IRremote.h"
 #include "MK_IRremoteInt.h"
 
+#if defined MK_IR
+
 //==============================================================================
 //                           SSSS   OOO   N   N  Y   Y
 //                          S      O   O  NN  N   Y Y
@@ -91,4 +93,6 @@ bool  IRrecv::decodeSony (decode_results *results)
 	results->decode_type = SONY;
 	return true;
 }
+#endif
+
 #endif

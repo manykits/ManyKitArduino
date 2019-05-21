@@ -33,71 +33,77 @@ char MK_Arduino::PinStr[P_MAX_TYPE] =
 };
 //----------------------------------------------------------------------------
 unsigned char MK_Arduino::sOptTypeVal[OT_MAX_TYPE] =
-{
-    100, //OT_TOGET_NETID
-    101, //OT_RETRUN_NETID
-    0,  //OT_PM
-    1,  //OT_DW
-    2,  //OT_AW
-    3,  //OT_RETURN_DR
-    4,  //OT_RETURN_AR
-    5,  //OT_SVR_I
-    6,  //OT_SVR_W
-    7,  //OT_DST_I
-    8,  //OT_DST_T
-    9,  //OT_RETURN_DIST
-    10, //OT_MOTO_I
-    11, //OT_MOTO_RUN
-    12, //OT_MOTO_RUNSIMPLE
-    13, //OT_MOTO_STOP
-    14, //OT_MOTO_I_SPD
-    15, //OT_RETURN_MOTOSPD
-    16, //OT_MOTO_I_DRIVER4567
-    17, //OT_MOTO_I_DRIVER298N
-    18, //OT_MP3_INIT
-    19, //OT_MP3_DO
-    20, //OT_MP3_PLAYFOLDER
-    21, //OT_MP3_SETVOLUME
-    24, //OT_IR_INIT
-    25, //OT_IR_SEND
-    26, //OT_RETURN_IR
-    27, //OT_HX711_I
-    28, //OT_HX711_TEST
-    29, //OT_RETURN_HX711
-    30, //OT_DSTMAT_I
-    31, //OT_RETURN_DSTMAT
-    32, //OT_AXIS_I
-    33, //OT_RETURN_AXIS
-    34, //OT_SET_TIME,
-    35, //OT_RC_INIT
-    36, //OT_RC_SEND
-    37, //OT_RETRUN_RC
-    38, //OT_DHT_I
-    39, //OT_RETURN_DHTTEMP
-    40, //OT_RETURN_DHTHUMI
-    41, //OT_LEDSTRIP_I
-    42, //OT_LEDSTRIP_SET
-    43, //OT_SEGMENT_I
-    44, //OT_SEGMENT_BRIGHTNESS
-    45, //OT_SEGMENT_CLEAR
-    46, //OT_SEGMENT_DISPLAY
-    47, //OT_LEDMATRIX_I
-    48, //OT_LEDMATRIX_BRIGHTNESS
-    49, //OT_LEDMATRIX_CLEARSCREEN
-    50, //OT_LEDMATRIX_LIGHTAT
-    51, //OT_STEPMOTO_I
-    52, //OT_STEPMOTO_ENABLE
-    53, //OT_STEPMOTO_DIR
-    54, //OT_STEPMOTO_STEP
-    150, //OT_MC_INTERNAL_LIGHT
-    151, //OT_MC_LIGHT
-    152, //OT_MC_SEGMENT
-    153, //OT_MC_MOTO
-    154, //OT_MC_DISTTEST
-    161, //OT_MB_MOTO
-    162, //OT_MB_SEND
-    163, //OT_MB_BUZZER
-    200 //OT_VERSION
+    {
+        100, //OT_TOGET_NETID
+        101, //OT_RETRUN_NETID
+        0,   //OT_PM
+        1,   //OT_DW
+        2,   //OT_AW
+        3,   //OT_RETURN_DR
+        4,   //OT_RETURN_AR
+        5,   //OT_SVR_I
+        6,   //OT_SVR_W
+        7,   //OT_DST_I
+        8,   //OT_DST_T
+        9,   //OT_RETURN_DIST
+        10,  //OT_MOTO_I
+        11,  //OT_MOTO_RUN
+        12,  //OT_MOTO_RUNSIMPLE
+        13,  //OT_MOTO_STOP
+        14,  //OT_MOTO_I_SPD
+        15,  //OT_RETURN_MOTOSPD
+        16,  //OT_MOTO_I_DRIVER4567
+        17,  //OT_MOTO_I_DRIVER298N
+        18,  //OT_MP3_INIT
+        19,  //OT_MP3_DO
+        20,  //OT_MP3_PLAYFOLDER
+        21,  //OT_MP3_SETVOLUME
+        24,  //OT_IR_INIT
+        25,  //OT_IR_SEND
+        26,  //OT_RETURN_IR
+        27,  //OT_HX711_I
+        28,  //OT_HX711_TEST
+        29,  //OT_RETURN_HX711
+        30,  //OT_DSTMAT_I
+        31,  //OT_RETURN_DSTMAT
+        32,  //OT_AXIS_I
+        33,  //OT_RETURN_AXIS
+        34,  //OT_SET_TIME,
+        35,  //OT_RC_INIT
+        36,  //OT_RC_SEND
+        37,  //OT_RETRUN_RC
+        38,  //OT_DHT_I
+        39,  //OT_RETURN_DHTTEMP
+        40,  //OT_RETURN_DHTHUMI
+        41,  //OT_LEDSTRIP_I
+        42,  //OT_LEDSTRIP_SET
+        43,  //OT_SEGMENT_I
+        44,  //OT_SEGMENT_BRIGHTNESS
+        45,  //OT_SEGMENT_CLEAR
+        46,  //OT_SEGMENT_DISPLAY
+        47,  //OT_LEDMATRIX_I
+        48,  //OT_LEDMATRIX_BRIGHTNESS
+        49,  //OT_LEDMATRIX_CLEARSCREEN
+        50,  //OT_LEDMATRIX_LIGHTAT
+        51,  //OT_STEPMOTO_I
+        52,  //OT_STEPMOTO_ENABLE
+        53,  //OT_STEPMOTO_DIR
+        54,  //OT_STEPMOTO_STEP
+        55,  //OT_LCI2C_INIT
+        56,  //OT_LCI2C_DO
+        57,  //OT_LCI2C_SETCURSOR
+        58,  //OT_LCI2C_SETBACKLIGHT
+        59,  //OT_LCI2C_PRINT
+        60,  //OT_LCI2C_PRINTBYTE
+        150, //OT_MC_INTERNAL_LIGHT
+        151, //OT_MC_LIGHT
+        152, //OT_MC_SEGMENT
+        153, //OT_MC_MOTO
+        154, //OT_MC_DISTTEST
+        161, //OT_MB_MOTO
+        162, //OT_MB_SEND
+        163, //OT_MB_BUZZER
+        200  //OT_VERSION
 };
 //----------------------------------------------------------------------------
 MK_Arduino::MK_Arduino()
@@ -224,6 +230,14 @@ void MK_Arduino::Init(bool isReset)
 
 #if defined MK_DHT
   mIsInitedDHT = false;
+#endif
+
+#if defined MK_SCREEN_I2C
+  if (isReset && mLiquidCrystal_I2C)
+  {
+    delete (mLiquidCrystal_I2C);
+  }
+  mLiquidCrystal_I2C = 0;
 #endif
 }
 //----------------------------------------------------------------------------

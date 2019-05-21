@@ -1,7 +1,8 @@
-#if defined MK_XH711
 
 #include <Arduino.h>
 #include "MK_HX711.h"
+
+#if defined MK_XH711
 
 #if ARDUINO_VERSION <= 106
     // "yield" is not implemented as noop in older Arduino Core releases, so let's define it.

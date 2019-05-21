@@ -1,7 +1,9 @@
-#if defined MK_XH711
-
 #ifndef MK_HX711_h
 #define MK_HX711_h
+
+#include "MK_ArduinoConfig.h"
+
+#if defined MK_XH711
 
 #if ARDUINO >= 100
 #include "Arduino.h"

@@ -2,6 +2,10 @@
 #define PID_v1_h
 //#define LIBRARY_VERSION	1.1.1
 
+#include "MK_ArduinoConfig.h"
+
+#if defined MK_PID
+
 class PID
 {
 
@@ -77,4 +81,6 @@ class PID
 	double outMin, outMax;
 	bool inAuto;
 };
+#endif
+
 #endif

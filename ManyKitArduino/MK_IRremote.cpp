@@ -24,6 +24,8 @@
 #	include "MK_IRremoteInt.h"
 #undef IR_GLOBAL
 
+#if defined MK_IR
+
 #ifndef IR_TIMER_USE_ESP32
 #include <avr/interrupt.h>
 #endif
@@ -198,3 +200,5 @@ ISR (TIMER_INTR_NAME)
 				else BLINKLED_OFF() ;   // if no user defined LED pin, turn default LED pin for the hardware on
 	}
 }
+
+#endif

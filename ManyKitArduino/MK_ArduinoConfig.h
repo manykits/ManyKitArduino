@@ -15,13 +15,16 @@
 
 //#define MK_DHT
 
-#define MK_LEDSTRIP
+#define MK_SCREEN_I2C
+
+//#define MK_LEDSTRIP
 
 //#define MK_LEDMATRIX
 
-#define MK_SEGMENT7
+//#define MK_SEGMENT7
 
-#define MK_MP3
+//#define MK_MP3
+//#define MK_DFMP3
 
 // weight
 //#define MK_XH711 1

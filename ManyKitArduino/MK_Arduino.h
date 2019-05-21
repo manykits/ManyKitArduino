@@ -73,6 +73,38 @@
 #include "MK_MP3_KT403A.h"
 #endif
 
+#if defined MK_SCREEN_I2C
+#include "MK_LiquidCrystal_I2C.h"
+
+enum SCREEN_I2C_DoType
+{
+  SCR_INIT,
+  SCR_CLEAR,
+  SCR_HOME,
+  SCR_NO_DISPLAY,
+  SCR_DISPLAY,
+  SCR_NO_BLINK,
+  SCR_BLINK,
+  SCR_NO_CURSOR,
+  SCR_CURSOR,
+  SCR_SCROOL_DISPLAYLEFT,
+  SCR_SCROOL_DISPLAYRIGHT,
+  SCR_LEFT_TO_RIGHT,
+  SCR_RIGHT_TO_LEFT,
+  SCR_NO_BACKLIGHT,
+  SCR_BACKLIGHT,
+  SCR_NO_AUTO_SCROOL,
+  SCR_AUTO_SCROLL,
+  SCR_BLINK_ON,
+  SCR_BLINK_OFF,
+  SCR_CURSOR_ON,
+  SCR_CURSOR_OFF,
+  SCR_ON,
+  SCR_OFF,
+  SCR_MAX_TYPE
+};
+#endif
+
 enum MK_Pin
 {
     P_0 = 0,
@@ -168,7 +200,7 @@ enum OptionType
   OT_HX711_TEST,
   OT_RETURN_HX711,
   OT_DSTMAT_I,
-	OT_RETURN_DSTMAT,
+  OT_RETURN_DSTMAT,
   OT_AXIS_I,
   OT_RETURN_AXIS,
   OT_SET_TIME,
@@ -176,8 +208,8 @@ enum OptionType
   OT_RC_SEND,
   OT_RETRUN_RC,
   OT_DHT_I,
-	OT_RETURN_DHTTEMP,
-	OT_RETURN_DHTHUMI,
+  OT_RETURN_DHTTEMP,
+  OT_RETURN_DHTHUMI,
   OT_LEDSTRIP_I,
   OT_LEDSTRIP_SET,
   OT_SEGMENT_I,
@@ -192,12 +224,18 @@ enum OptionType
   OT_STEPMOTO_ENABLE,
   OT_STEPMOTO_DIR,
   OT_STEPMOTO_STEP,
+  OT_LCI2C_INIT,
+  OT_LCI2C_DO,
+  OT_LCI2C_SETCURSOR,
+  OT_LCI2C_SETBACKLIGHT,
+  OT_LCI2C_PRINT,
+  OT_LCI2C_PRINTBYTE,
   OT_MC_INTERNAL_LIGHT, // makerclock
   OT_MC_LIGHT,
   OT_MC_SEGMENT,
   OT_MC_MOTO,
   OT_MC_DISTTEST,
-  OT_MB_MOTO,	// mbot
+  OT_MB_MOTO, // mbot
   OT_MB_SEND,
   OT_MB_BUZZER,
   OT_VERSION,
@@ -483,6 +521,16 @@ public:
 
 #if defined MK_SEGMENT7
   SegmentDisplay mSegmentDisplay;
+#endif
+
+#if defined MK_SCREEN_I2C
+  LiquidCrystal_I2C *mLiquidCrystal_I2C;
+  void _LCI2C_Init(int addr = 0x3F, int numCols=16, int numRows=2);
+  void _LCI2C_Do(SCREEN_I2C_DoType doType);
+  void _LCI2C_SetCursor(int col, int row);
+  void _LCI2C_SetBackLight(int val);
+  void _LCI2C_Print(String val);
+  void _LCI2C_PrintByte(int selfCreateCharIndex);
 #endif
 };
 

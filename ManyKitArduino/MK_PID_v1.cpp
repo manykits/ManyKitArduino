@@ -13,6 +13,8 @@
 
 #include "MK_PID_v1.h"
 
+#if defined MK_PID
+
 /*Constructor (...)*********************************************************
  *    The parameters specified here are those for for which we can't set up 
  *    reliable defaults, so we need to have the user set them.
@@ -192,3 +194,5 @@ double PID::GetKi(){ return  dispKi;}
 double PID::GetKd(){ return  dispKd;}
 int PID::GetMode(){ return  inAuto ? AUTOMATIC : MANUAL;}
 int PID::GetDirection(){ return controllerDirection;}
+
+#endif
