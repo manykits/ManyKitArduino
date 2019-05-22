@@ -49,7 +49,7 @@ void MK_Arduino::_LCI2C_Do(SCREEN_I2C_DoType doType)
     {
         if (mLiquidCrystal_I2C)
         {
-            mLiquidCrystal_I2C->init();
+            mLiquidCrystal_I2C->clear();
         }
     }
     else if (doType == SCR_HOME)

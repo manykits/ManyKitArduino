@@ -463,14 +463,14 @@ void MK_Arduino::Tick()
       mDurationLTemp = 0;
     if (resultR)
       mDurationRTemp = 0;
+
+    if (millis() - mLastSendGeneralTime >= 100)
+    {
+      mLastSendGeneralTime = millis();
+      _SendPID();
+    }
   }
 #endif
-
-  if (millis() - mLastSendGeneralTime >= 100)
-  {
-    mLastSendGeneralTime = millis();
-    _SendPID();
-  }
 
 #if defined MK_RCSWITCH
  if (mRCSwitch.available()) 

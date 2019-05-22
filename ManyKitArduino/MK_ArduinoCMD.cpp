@@ -12,7 +12,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
 
   String strs = cmdStr;
   mCMDIndexTemp = 0;
-  mpCMDParam = strtok((char *)cmdStr.c_str(), " ");
+  mpCMDParam = strtok((char *)strs.c_str(), " ");
   while (mpCMDParam)
   {
     mCmdParams[mCMDIndexTemp] = String(mpCMDParam);
@@ -246,7 +246,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_RETURN_MOTOSPD] == cmdCH)
     {
-
+      /*_*/
     }
     else if (sOptTypeVal[OT_HX711_I]==cmdCH)
     {

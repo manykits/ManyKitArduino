@@ -9,11 +9,11 @@
 
 #define MK_PID
 
-#define MK_STEPMOTO
+//#define MK_STEPMOTO
 
 //#define MK_RCSWITCH
 
-//#define MK_DHT
+#define MK_DHT
 
 #define MK_SCREEN_I2C
 
