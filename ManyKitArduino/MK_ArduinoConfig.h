@@ -3,19 +3,19 @@
 #ifndef MK_ARDUINOCONFIG_H
 #define MK_ARDUINOCONFIG_H
 
-//#define MK_SERVO
+#define MK_SERVO
 
-#define MK_IR 1
+//#define MK_IR 1
 
 //#define MK_PID
 
 //#define MK_STEPMOTO
 
-//#define MK_RCSWITCH
+#define MK_RCSWITCH
 
 //#define MK_DHT
 
-#define MK_SCREEN_I2C
+//#define MK_SCREEN_I2C
 
 //#define MK_LEDSTRIP
 
