@@ -354,6 +354,7 @@ public:
   void _DistInit_(int pinTrig, int pinEcho);
   void _DistTest();
 
+#if defined MK_MOTO
   enum MotoMode
   {
     MM_BOARD,
@@ -367,19 +368,25 @@ public:
   void LeftRun(int val, int spd);
   void RightRun(int val, int spd);
   void _SendSpeed();
+#endif
 
   void MP3Init(int pinR, int pinT);
   void MP3Do(Mp3PlayType type);
   void MP3FolderPlay(int folder, int index);
   void MP3SetVolime(int val);
-  
+
+#if defined MK_IR
   void IRInit(int pinR);
   void IRSend(int val);
+  int GetIRReceivedValue();
   void _SendIRRecv(int val);
+#endif
 
+#if defined MK_XH711
   void HX711Init(int index, int pinOut, int pinClk);
   float _ReadHX711(int index);
   void _HXSend(int index, float val);
+#endif
 
   void _Delay(float seconds);
   void _Loop();
@@ -445,7 +452,9 @@ private:
 
   bool mIsUseSpeedEncorder;
 
+#if defined MK_MOTO
   MotoMode mMotoMode;
+#endif
 
 #if defined MK_SSD1306
   Adafruit_SSD1306 *mDisplay;
@@ -458,6 +467,7 @@ private:
 #if defined MK_IR
   IRrecv *mIRrecv;
   IRsend mIRsend;
+  int mIRRecvValue;
 #endif
 
 #if defined MK_XH711

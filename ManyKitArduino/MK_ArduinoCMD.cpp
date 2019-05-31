@@ -136,14 +136,19 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_MOTO_I]==cmdCH)
     {
+#if defined MK_MOTO
       MotoInit10111213();
+#endif
     }
     else if (sOptTypeVal[OT_MOTO_I_DRIVER4567] == cmdCH)
     {
+#if defined MK_MOTO
       MotoInit4567();
+#endif
     }
     else if (sOptTypeVal[OT_MOTO_I_DRIVER298N] == cmdCH)
     {
+#if defined MK_MOTO
       int pinL = _Str2Pin(mCmdParams[1]);
       int pinL1 = _Str2Pin(mCmdParams[2]);
       int pinLS = _Str2Pin(mCmdParams[3]);
@@ -151,9 +156,11 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int pinR1 = _Str2Pin(mCmdParams[5]);
       int pinRS = _Str2Pin(mCmdParams[6]);      
       MotoInit298N(pinL, pinL1, pinLS, pinR, pinR1, pinRS);
+#endif
     }   
     else if (sOptTypeVal[OT_MOTO_RUN]==cmdCH)
     {
+#if defined MK_MOTO
       int motoIndex = _Str2Int(mCmdParams[1]);
       int dir = _Str2DirType(mCmdParams[2]);
       int spd = _Str2Int(mCmdParams[3]);
@@ -165,9 +172,11 @@ void MK_Arduino::OnCMD(String &cmdStr)
         LeftRun(dir, spd);
       else if (1 == motoIndex)
         RightRun(dir, spd);
+#endif
     }
     else if (sOptTypeVal[OT_MOTO_RUNSIMPLE]==cmdCH)
     {
+#if defined MK_MOTO
       int dir = _Str2SimpleDirType(mCmdParams[1]);
       int spd = _Str2Int(mCmdParams[2]);
       if (0 == dir)
@@ -196,11 +205,14 @@ void MK_Arduino::OnCMD(String &cmdStr)
         LeftRun(1, spd);
         RightRun(2, spd);
       }
+#endif
     }
     else if (sOptTypeVal[OT_MOTO_STOP]==cmdCH)
     {
+#if defined MK_MOTO
       LeftRun(0, 0);
       RightRun(0, 0);
+#endif
     }
     else if (sOptTypeVal[OT_MP3_INIT]==cmdCH)
     {
@@ -228,21 +240,27 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_IR_INIT]==cmdCH)
     {
+#if defined MK_IR
       int pinR = _Str2Pin(mCmdParams[1]);
       IRInit(pinR);      
+#endif
     }
     else if (sOptTypeVal[OT_IR_SEND]==cmdCH)
     {
+#if defined MK_IR
       int val = _Str2Int(mCmdParams[1]);
       IRSend(val);
+#endif
     }
     else if (sOptTypeVal[OT_MOTO_I_SPD]==cmdCH)
     {
+#if defined MK_MOTO
       int pinLA = _Str2Pin(mCmdParams[1]);
       int pinLB = _Str2Pin(mCmdParams[2]);
       int pinRA = _Str2Pin(mCmdParams[3]);
       int pinRB = _Str2Pin(mCmdParams[4]);
       MotoSpeedInit(pinLA, pinLB, pinRA, pinRB);
+#endif
     }
     else if (sOptTypeVal[OT_RETURN_MOTOSPD] == cmdCH)
     {
@@ -250,16 +268,20 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_HX711_I]==cmdCH)
     {
+#if defined MK_XH711
       int index = _Str2Int(mCmdParams[1]);
       int pinOut = _Str2Pin(mCmdParams[2]);
       int pinClk = _Str2Pin(mCmdParams[3]);
       HX711Init(index, pinOut, pinClk);
+#endif
     }
     else if (sOptTypeVal[OT_HX711_TEST]==cmdCH)
     {
+#if defined MK_XH711
       int index = _Str2Int(mCmdParams[1]);
       float val = _ReadHX711(index);
       _HXSend(index, val);
+#endif
     }
     else if (sOptTypeVal[OT_RC_INIT]==cmdCH)
     {      

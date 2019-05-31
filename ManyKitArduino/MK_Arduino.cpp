@@ -151,7 +151,10 @@ void MK_Arduino::Init(bool isReset)
 
   mIsUseSpeedEncorder = false;
 
+#if defined MK_MOTO
   mMotoMode = MM_BOARD;
+#endif
+  
   mPinEncroderLA = 2;
   mPinEncroderLB = 8;
   mPinEncroderRA = 3;
@@ -206,10 +209,11 @@ void MK_Arduino::Init(bool isReset)
     delete mIRrecv;
   }
   mIRrecv = 0;
+  mIRRecvValue = 0;
 #endif
 
 #if defined MK_AXIS
-  mPitch = 0.0f;
+      mPitch = 0.0f;
   mRoll = 0.0f;
   mYaw = 0.0f;
   mAxisTickEvent = -1;
@@ -523,6 +527,7 @@ void MK_Arduino::_DistTest()
     mDist = dist;
   }
 }
+#if defined MK_MOTO
 //----------------------------------------------------------------------------
 void MK_Arduino::MotoInit10111213()
 {
@@ -594,6 +599,7 @@ void MK_Arduino::MotoInit298N(int pinL, int pinL1, int pinLS, int pinR,
   mYaw = 0.0f;
 #endif
 }
+#endif
 //----------------------------------------------------------------------------
 #if defined MK_PID
 void wheelSpeedL()
@@ -641,6 +647,7 @@ void wheelSpeedR()
    MK_Arduino::pxfarduino->mDurationRTemp--;
 }
 #endif
+#if defined MK_MOTO
 void MK_Arduino::_SendSpeed()
 {
 #if defined MK_PID
@@ -1005,6 +1012,7 @@ void MK_Arduino::RightRun(int val, int spd)
     }
   }
 }
+#endif
 //----------------------------------------------------------------------------
 void sAxisTickTimer()
 {

@@ -2,10 +2,10 @@
 
 #include "MK_Arduino.h"
 
+#if defined MK_IR
 //----------------------------------------------------------------------------
 void MK_Arduino::IRInit(int pin)
 {
-#if defined MK_IR
     if (mIRrecv)
     {
         delete mIRrecv;
@@ -15,21 +15,22 @@ void MK_Arduino::IRInit(int pin)
     pinMode(pin, INPUT);
     mIRrecv = new IRrecv(pin);
     mIRrecv->enableIRIn();
-#endif
 }
 //----------------------------------------------------------------------------
 void MK_Arduino::IRSend(int val)
 { 
-#if defined MK_IR
     mIRsend.sendSony(val, 32);
     if (mIRrecv)
       mIRrecv->enableIRIn();
-#endif
+}
+//----------------------------------------------------------------------------
+int MK_Arduino::GetIRReceivedValue()
+{
+    return mIRRecvValue;
 }
 //----------------------------------------------------------------------------
 void MK_Arduino::_SendIRRecv(int val)
 {
-#if defined MK_IR
     unsigned char cmdCh = sOptTypeVal[OT_RETURN_IR];
     char strCMDCh[32];
     memset(strCMDCh, 0, 32);
@@ -65,6 +66,6 @@ void MK_Arduino::_SendIRRecv(int val)
     //     LeftRun(0, 0);
     //     RightRun(0, 0);
     // }
-#endif
 }
+#endif
 //----------------------------------------------------------------------------

@@ -2,10 +2,10 @@
 
 #include "MK_Arduino.h"
 
+#if defined MK_XH711
 //----------------------------------------------------------------------------
 void MK_Arduino::HX711Init(int index, int pinOut, int pinClk)
 {
-#if defined MK_XH711
     if (0 == index)
     {
         mXH711_0 = HX711(pinOut, pinClk);
@@ -22,14 +22,12 @@ void MK_Arduino::HX711Init(int index, int pinOut, int pinClk)
     {
         mXH711_3 = HX711(pinOut, pinClk);       
     }
-#endif
 }
 //----------------------------------------------------------------------------
 float MK_Arduino::_ReadHX711(int index)
 {
     float val = 0.0;
     
-    #if defined MK_XH711
     if (0 == index)
     {
         val = mXH711_0.read_average(4); 
@@ -46,14 +44,12 @@ float MK_Arduino::_ReadHX711(int index)
     {
          val = mXH711_3.read_average(4);      
     }
-    #endif
     
     return val;
 }
 //----------------------------------------------------------------------------
 void MK_Arduino::_HXSend(int index, float val)
 {
-#if defined MK_XH711
     unsigned char cmdCh = sOptTypeVal[OT_RETURN_HX711];
     char strCMDCh[32];
     memset(strCMDCh, 0, 32);
@@ -73,6 +69,6 @@ void MK_Arduino::_HXSend(int index, float val)
     String sendStr = String(strCMDCh) + " " + String(strI) + " " + String(strF);
     String lastCmdStr = "0000" + sendStr;
     Serial.println(lastCmdStr);
-#endif
 }
 //----------------------------------------------------------------------------
+#endif
