@@ -3,7 +3,7 @@
 #include "MK_Arduino.h"
 
 //----------------------------------------------------------------------------
-void MK_Arduino::_MP3Init_(int pinR, int pinT)
+void MK_Arduino::MP3Init(int pinR, int pinT)
 {
 #if defined MK_DFMP3
   if (mMP3DFSerial)
@@ -24,7 +24,7 @@ void MK_Arduino::_MP3Init_(int pinR, int pinT)
 #endif
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_MP3Do(Mp3PlayType type)
+void MK_Arduino::MP3Do(Mp3PlayType type)
 {
   if (type == MPT_PLAY)
   {
@@ -100,14 +100,14 @@ void MK_Arduino::_MP3Do(Mp3PlayType type)
   }
 }
 //----------------------------------------------------------------------------
-  void MK_Arduino::_MP3FolderPlay(int folder, int index)
+  void MK_Arduino::MP3FolderPlay(int folder, int index)
   {
 #if defined MK_MP3
     mMP3.PlayFolderIndex(folder, index);
 #endif
   }
   //----------------------------------------------------------------------------
-  void MK_Arduino::_MP3SetVolime(int val)
+  void MK_Arduino::MP3SetVolime(int val)
   {
 #if defined MK_MP3
     mMP3.SetVolume(val);

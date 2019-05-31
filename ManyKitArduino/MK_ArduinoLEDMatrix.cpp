@@ -4,34 +4,34 @@
 
 #if defined MK_LEDMATRIX
 
-void MK_Arduino::_LEDMatrixInit(int sckPin, int dinPin)
+void MK_Arduino::LEDMatrixInit(int sckPin, int dinPin)
 {
     mLEDMatrix = LEDMatrix(sckPin, dinPin);
     mLEDMatrix.setColorIndex(1);
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LEDMatrixSetBrightness(int brightness)
+void MK_Arduino::LEDMatrixSetBrightness(int brightness)
 {
   mLEDMatrix.setBrightness(brightness);
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LEDMatrixClearScreen()
+void MK_Arduino::LEDMatrixClearScreen()
 {
     mLEDMatrix.clearScreen();
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LEDMatrixSetColorIndex(int iColor_Number)
+void MK_Arduino::LEDMatrixSetColorIndex(int iColor_Number)
 {
     mLEDMatrix.setColorIndex(iColor_Number);
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LEDMatrixDrawBitmap(int8_t x, int8_t y, uint8_t bitmap_Width, 
+void MK_Arduino::LEDMatrixDrawBitmap(int8_t x, int8_t y, uint8_t bitmap_Width, 
     uint8_t *bitmap)
 {
    mLEDMatrix.drawBitmap(x, y, bitmap_Width, bitmap);
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LEDMatrixLightPos(int8_t x, int8_t y, int width, bool onOff)
+void MK_Arduino::LEDMatrixLightPos(int8_t x, int8_t y, int width, bool onOff)
 {
     if (width > 16)
         width = 16;
@@ -57,19 +57,19 @@ void MK_Arduino::_LEDMatrixLightPos(int8_t x, int8_t y, int width, bool onOff)
     }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LEDMatrixDrawStr(int16_t x_position, int8_t y_position,
+void MK_Arduino::LEDMatrixDrawStr(int16_t x_position, int8_t y_position,
      const char *str)
 {
     mLEDMatrix.drawStr(x_position, y_position, str);
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LEDMatrixShowClock(uint8_t hour, uint8_t minute,
+void MK_Arduino::LEDMatrixShowClock(uint8_t hour, uint8_t minute,
  bool isPointOn)
 {
     mLEDMatrix.showClock(hour, minute, isPointOn);
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LEDMatrixShowNum(float value,uint8_t val)
+void MK_Arduino::LEDMatrixShowNum(float value,uint8_t val)
 {
     mLEDMatrix.showNum(value, val);
 }

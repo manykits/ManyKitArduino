@@ -3,7 +3,7 @@
 #include "MK_Arduino.h"
 
 //----------------------------------------------------------------------------
-void MK_Arduino::_HX711Init(int index, int pinOut, int pinClk)
+void MK_Arduino::HX711Init(int index, int pinOut, int pinClk)
 {
 #if defined MK_XH711
     if (0 == index)
@@ -71,7 +71,8 @@ void MK_Arduino::_HXSend(int index, float val)
     //dtostrf(val, 2, 1, strF);
 
     String sendStr = String(strCMDCh) + " " + String(strI) + " " + String(strF);
-    _SendCMD(sendStr);
+    String lastCmdStr = "0000" + sendStr;
+    Serial.println(lastCmdStr);
 #endif
 }
 //----------------------------------------------------------------------------

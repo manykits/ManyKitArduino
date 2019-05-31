@@ -3,7 +3,7 @@
 #include "MK_Arduino.h"
 
 //----------------------------------------------------------------------------
-void MK_Arduino::_IRInit_(int pin)
+void MK_Arduino::IRInit(int pin)
 {
 #if defined MK_IR
     if (mIRrecv)
@@ -18,7 +18,7 @@ void MK_Arduino::_IRInit_(int pin)
 #endif
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_IRSend(int val)
+void MK_Arduino::IRSend(int val)
 { 
 #if defined MK_IR
     mIRsend.sendSony(val, 32);
@@ -42,28 +42,28 @@ void MK_Arduino::_SendIRRecv(int val)
 
     // if (7611 == val)
     // {
-    //     _LeftRun(1,255);
-    //     _RightRun(1, 255);
+    //     LeftRun(1,255);
+    //     RightRun(1, 255);
     // }
     // else if (-4645 == val)
     // {
-    //     _LeftRun(2, 255);
-    //     _RightRun(2, 255);
+    //     LeftRun(2, 255);
+    //     RightRun(2, 255);
     // }
     // else if (-11233 == val)
     // {
-    //     _LeftRun(2, 255);
-    //     _RightRun(1, 255);
+    //     LeftRun(2, 255);
+    //     RightRun(1, 255);
     // }
     // else if (19899 == val)
     // {
-    //     _LeftRun(1, 255);
-    //     _RightRun(2, 255);
+    //     LeftRun(1, 255);
+    //     RightRun(2, 255);
     // }
     // else if (19227 == val)
     // {
-    //     _LeftRun(0, 0);
-    //     _RightRun(0, 0);
+    //     LeftRun(0, 0);
+    //     RightRun(0, 0);
     // }
 #endif
 }

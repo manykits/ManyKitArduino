@@ -309,12 +309,6 @@ float MK_Arduino::_GetDist()
   return mDist;
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_VehicleStop()
-{
-  _LeftRun(0, 0);
-  _RightRun(0, 0);
-}
-//----------------------------------------------------------------------------
 String MK_Arduino::I2Str(int val)
 {
   char str[25];
@@ -376,7 +370,8 @@ void MK_Arduino::_SendNetID()
     itoa(cmdCh, strCMDCh, 10);
 
     String sendStr = String(strCMDCh) + " " + str;
-    _SendCMD(sendStr);
+    String lastCmdStr = "0000" + sendStr;
+    Serial.println(lastCmdStr);
 }
 //----------------------------------------------------------------------------
 void MK_Arduino::_SendVersion()
@@ -469,7 +464,7 @@ void MK_Arduino::Tick()
     if (millis() - mLastSendGeneralTime >= 100)
     {
       mLastSendGeneralTime = millis();
-      _SendPID();
+      _SendSpeed();
     }
   }
 #endif
@@ -529,7 +524,7 @@ void MK_Arduino::_DistTest()
   }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_MotoInit10111213()
+void MK_Arduino::MotoInit10111213()
 {
   mPinL0 = 12;
   mPinL1 = 12;
@@ -547,7 +542,7 @@ void MK_Arduino::_MotoInit10111213()
   mIsUseSpeedEncorder = false;
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_MotoInit4567()
+void MK_Arduino::MotoInit4567()
 {
   mPinL0 = 4;
   mPinL1 = 4;
@@ -571,7 +566,7 @@ void MK_Arduino::_MotoInit4567()
   mIsUseSpeedEncorder = false;
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_MotoInit298N(int pinL, int pinL1, int pinLS, int pinR, 
+void MK_Arduino::MotoInit298N(int pinL, int pinL1, int pinLS, int pinR, 
   int pinR1, int pinRS)
 {
   mPinL0 = pinL;
@@ -646,7 +641,7 @@ void wheelSpeedR()
    MK_Arduino::pxfarduino->mDurationRTemp--;
 }
 #endif
-void MK_Arduino::_SendPID()
+void MK_Arduino::_SendSpeed()
 {
 #if defined MK_PID
   unsigned char cmdCh = sOptTypeVal[OT_RETURN_MOTOSPD];
@@ -668,7 +663,7 @@ void MK_Arduino::_SendPID()
 #endif
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_MotoSpeedInit(int encorderLA, int encorderLB,
+void MK_Arduino::MotoSpeedInit(int encorderLA, int encorderLB,
   int encorderRA, int encorderRB)
 {
   mPinEncroderLA = encorderLA;
@@ -752,7 +747,7 @@ void MK_Arduino::_MotoSpeedInit(int encorderLA, int encorderLB,
   }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LeftRun(int val, int spd)
+void MK_Arduino::LeftRun(int val, int spd)
 {
   if (MM_BOARD == mMotoMode)
   {
@@ -881,7 +876,7 @@ void MK_Arduino::_LeftRun(int val, int spd)
   }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_RightRun(int val, int spd)
+void MK_Arduino::RightRun(int val, int spd)
 {
   if (MM_BOARD == mMotoMode)
   {
@@ -1058,10 +1053,10 @@ void MK_Arduino::_SetTime()
   if (0.0==mSettedTimeMe)
     mSettedTimeMe = 0.001;
 }
+#if defined MA_AXIS
 //----------------------------------------------------------------------------
 void MK_Arduino::_InitAxis()
 {
-#if defined MK_AXIS
   mMPU.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G);
   while(!mMPU.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G))
   {
@@ -1082,8 +1077,8 @@ void MK_Arduino::_InitAxis()
   mAxisTickEvent = mTimer.every(50, sAxisTickTimer);
 
   mAxisLastTick = millis();
-#endif
 }
+#endif
 //----------------------------------------------------------------------------
 void MK_Arduino::_Delay(float seconds)
 {
@@ -1094,15 +1089,6 @@ void MK_Arduino::_Delay(float seconds)
 //----------------------------------------------------------------------------
 void MK_Arduino::_Loop()
 {
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_SendCMD(String &cmdStr)
-{
-  String lastCmdStr = "0000" + cmdStr;
-  //int allLength = 2 + cmdStr.length();
-  //*(unsigned short *)(&lastCmdStr[0]) = (unsigned short)allLength; // length
-  //*(unsigned short *)(&lastCmdStr[2]) = (unsigned short)GeneralServerMsgID; // id
-  Serial.println(lastCmdStr);
 }
 //----------------------------------------------------------------------------
 #if defined MK_STEPMOTO

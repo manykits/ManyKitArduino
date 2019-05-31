@@ -288,38 +288,37 @@ public:
   void _ServerWrite(int index, int val);
   void _DistInit(MK_Pin trigger, MK_Pin echo);
   float _GetDist();
-  void _VehicleStop();
 
 #if defined MK_DHT
-  void _DHTInit(MK_Pin pin);
+  void DHTInit(MK_Pin pin);
   void _DHTSendTemperatureHumidity();
 #endif
 
 #if defined MK_LEDSTRIP
-  void _RGBLEDInit(MK_Pin pin, int num);
-  void _RGBLEDSetColor(int index, int r, int g, int b);
+  void RGBLEDInit(MK_Pin pin, int num);
+  void RGBLEDSetColor(int index, int r, int g, int b);
 #endif
 
 #if defined MK_LEDMATRIX
-  void _LEDMatrixInit(int sckPin, int dinPin);
-  void _LEDMatrixSetBrightness(int brightness);
-  void _LEDMatrixClearScreen();
-  void _LEDMatrixSetColorIndex(int iColor_Number);
+  void LEDMatrixInit(int sckPin, int dinPin);
+  void LEDMatrixSetBrightness(int brightness);
+  void LEDMatrixClearScreen();
+  void LEDMatrixSetColorIndex(int iColor_Number);
   
-  void _LEDMatrixDrawBitmap(int8_t x, int8_t y, uint8_t bitmap_Width, uint8_t *bitmap);
-  void _LEDMatrixDrawStr(int16_t x_position, int8_t y_position, const char *str);
-  void _LEDMatrixShowClock(uint8_t hour, uint8_t minute, bool isPointON = true);
-  void _LEDMatrixShowNum(float value,uint8_t val= 3);
+  void LEDMatrixDrawBitmap(int8_t x, int8_t y, uint8_t bitmap_Width, uint8_t *bitmap);
+  void LEDMatrixDrawStr(int16_t x_position, int8_t y_position, const char *str);
+  void LEDMatrixShowClock(uint8_t hour, uint8_t minute, bool isPointON = true);
+  void LEDMatrixShowNum(float value,uint8_t val= 3);
 
-  void _LEDMatrixLightPos(int8_t x, int8_t y, int width, bool onOff);
+  void LEDMatrixLightPos(int8_t x, int8_t y, int width, bool onOff);
 #endif
 
 #if defined MK_SEGMENT7
-  void _SegmentInit(int clkPin, int dataPin);
-  void _SegmentSetBrightness(int brightness);
-  void _SegmentClear();
-  void _SegmentDisplayInt(int val);
-  void _SegmentDisplayFloat(float val);
+  void SegmentInit(int clkPin, int dataPin);
+  void SegmentSetBrightness(int brightness);
+  void SegmentClear();
+  void SegmentDisplayInt(int val);
+  void SegmentDisplayFloat(float val);
 #endif
 
   MK_PMode PinModes[P_MAX_TYPE];
@@ -354,34 +353,37 @@ public:
   void _SendNetID();
   void _DistInit_(int pinTrig, int pinEcho);
   void _DistTest();
+
   enum MotoMode
   {
     MM_BOARD,
     MM_298N,
     MM_MAX_TYPE
   };
-  void _MotoInit4567();
-  void _MotoInit10111213();
-  void _MotoInit298N(int pinL, int pinL1, int pinLS, int pinR, int pinR1, int pinRS);
-  void _MotoSpeedInit(int encorderLA, int encorderLB, int encorderRA, int encorderRB);
-  void _LeftRun(int val, int spd);
-  void _RightRun(int val, int spd);
-  void _SendPID();
- 
-  void _MP3Init_(int pinR, int pinT);
-  void _MP3Do(Mp3PlayType type);
-  void _MP3FolderPlay(int folder, int index);
-  void _MP3SetVolime(int val);
+  void MotoInit4567();
+  void MotoInit10111213();
+  void MotoInit298N(int pinL, int pinL1, int pinLS, int pinR, int pinR1, int pinRS);
+  void MotoSpeedInit(int encorderLA, int encorderLB, int encorderRA, int encorderRB);
+  void LeftRun(int val, int spd);
+  void RightRun(int val, int spd);
+  void _SendSpeed();
+
+  void MP3Init(int pinR, int pinT);
+  void MP3Do(Mp3PlayType type);
+  void MP3FolderPlay(int folder, int index);
+  void MP3SetVolime(int val);
   
-  void _IRInit_(int pinR);
-  void _IRSend(int val);
+  void IRInit(int pinR);
+  void IRSend(int val);
   void _SendIRRecv(int val);
-  void _Delay(float seconds);
-  void _Loop();
-  void _SendCMD(String &cmdStr);
-  void _HX711Init(int index, int pinOut, int pinClk);
+
+  void HX711Init(int index, int pinOut, int pinClk);
   float _ReadHX711(int index);
   void _HXSend(int index, float val);
+
+  void _Delay(float seconds);
+  void _Loop();
+
   void _SetTime();
   
 #if defined MK_STEPMOTO
@@ -495,9 +497,9 @@ private:
 #endif
 
 public:
+#if defined MK_AXIS
   void _InitAxis();
 
-#if defined MK_AXIS
   unsigned long mAxisLastTick;
   float mPitch;
   float mRoll;

@@ -5,7 +5,7 @@
 #if defined MK_DHT
 
 //----------------------------------------------------------------------------
-void MK_Arduino::_DHTInit(MK_Pin pin)
+void MK_Arduino::DHTInit(MK_Pin pin)
 {
   int pinArduino = MK_Pin2Pin(pin);
   pinMode(pinArduino, OUTPUT);
