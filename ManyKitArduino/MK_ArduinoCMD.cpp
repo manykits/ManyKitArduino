@@ -443,7 +443,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
     {
 #if defined MK_SCREEN_I2C
       SCREEN_I2C_DoType doType = (SCREEN_I2C_DoType)_Str2Int(mCmdParams[1]);
-      LCI2C_Do(doType);
+      LCI2C_DoType(doType);
 #endif
     }
     else if (sOptTypeVal[OT_LCI2C_SETCURSOR] == cmdCH)

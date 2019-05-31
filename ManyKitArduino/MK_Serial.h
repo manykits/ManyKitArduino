@@ -91,6 +91,8 @@ public:
   float getValue(String key);
 
 protected:
+  int getPort();
+
   bool _hard;
   bool _polling;
   bool _scratch;

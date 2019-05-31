@@ -14,6 +14,13 @@ SoftwareSerial(0, 0)
 {
 }
 //----------------------------------------------------------------------------
+#define PORT_11 (0x0b)
+#define PORT_12 (0x0c)
+#define PORT_13 (0x0d)
+#define PORT_14 (0x0e)
+#define PORT_15 (0x0f)
+#define PORT_16 (0x10)
+//----------------------------------------------------------------------------
 MK_Serial::MK_Serial(uint8_t receivePin, uint8_t transmitPin, bool inverse_logic):
  SoftwareSerial(receivePin, transmitPin, inverse_logic)
 {
@@ -47,6 +54,11 @@ MK_Serial::MK_Serial(uint8_t receivePin, uint8_t transmitPin, bool inverse_logic
 void MK_Serial::setHardware(bool mode)
 {
   _hard = mode;
+}
+//----------------------------------------------------------------------------
+int MK_Serial::getPort()
+{
+  return PORT_15;
 }
 //----------------------------------------------------------------------------
 void MK_Serial::begin(long baudrate)

@@ -36,7 +36,12 @@ void MK_Arduino::LCI2C_Init(int addr, int numCols, int numRows)
     mLiquidCrystal_I2C->home();
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::LCI2C_Do(SCREEN_I2C_DoType doType)
+void MK_Arduino::LCI2C_Do(int doType)
+{
+    LCI2C_DoType((SCREEN_I2C_DoType)doType);
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::LCI2C_DoType(SCREEN_I2C_DoType doType)
 {
     if (doType == SCR_INIT)
     {

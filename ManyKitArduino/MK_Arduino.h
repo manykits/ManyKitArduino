@@ -529,7 +529,8 @@ public:
 
 #if defined MK_SCREEN_I2C
   void LCI2C_Init(int addr = 0x3F, int numCols=16, int numRows=2);
-  void LCI2C_Do(SCREEN_I2C_DoType doType);
+  void LCI2C_DoType(SCREEN_I2C_DoType doType);
+  void LCI2C_Do(int doType);
   void LCI2C_SetCursor(int col, int row);
   void LCI2C_SetBackLight(int val);
   void LCI2C_Print(String val);
