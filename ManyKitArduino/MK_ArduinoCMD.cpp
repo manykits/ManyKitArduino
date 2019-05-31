@@ -39,7 +39,6 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int pin = _Str2Pin(mCmdParams[1]);
       int val = _Str2IO(mCmdParams[2]);
       int i = _Str2MK_Pin(mCmdParams[1]);
-      PinModes[i] = (MK_PMode)val;
       pinMode(pin, val);
     }
     else if(sOptTypeVal[OT_DW]==cmdCH)
@@ -300,21 +299,21 @@ void MK_Arduino::OnCMD(String &cmdStr)
     else if (sOptTypeVal[OT_DHT_I]==cmdCH)
     {
 #if defined MK_DHT
-      MK_Pin pin = (MK_Pin)_Str2Pin(mCmdParams[1]);
+      int pin = _Str2Pin(mCmdParams[1]);
       DHTInit(pin);
 #endif
     }
     else if (sOptTypeVal[OT_LEDSTRIP_I]==cmdCH)
     {
-#if defined MK_LEDSTRIP  
-      MK_Pin pin = (MK_Pin)_Str2Pin(mCmdParams[1]);
+#if defined MK_RGBLED  
+      int pin = _Str2Pin(mCmdParams[1]);
       int num = _Str2Int(mCmdParams[2]);
       RGBLEDInit(pin, num);
 #endif
     }
     else if (sOptTypeVal[OT_LEDSTRIP_SET]==cmdCH)
     {
-#if defined MK_LEDSTRIP  
+#if defined MK_RGBLED  
       int index = _Str2Int(mCmdParams[1]);
       int r = _Str2Int(mCmdParams[2]);
       int g = _Str2Int(mCmdParams[3]);
@@ -399,7 +398,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int pinDIR = _Str2Pin(mCmdParams[4]);
       int pinEnable = _Str2Pin(mCmdParams[5]);
 
-      _StepMotoInit(index, pinVCC, pinPLS, pinDIR, pinEnable);
+      StepMotoInit(index, pinVCC, pinPLS, pinDIR, pinEnable);
 
 #endif
     }
@@ -409,7 +408,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int index = _Str2Int(mCmdParams[1]);
       bool enable = _Str2Bool(mCmdParams[2]);
 
-      _StepMotoEnable(index, enable);
+      StepMotoEnable(index, enable);
 #endif
     }
     else if (sOptTypeVal[OT_STEPMOTO_DIR]==cmdCH)
@@ -418,7 +417,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int index = _Str2Int(mCmdParams[1]);
       bool bDir = _Str2Bool(mCmdParams[2]);
 
-      _StepMotoDir(index, bDir);
+      StepMotoDir(index, bDir);
 #endif
     }
     else if (sOptTypeVal[OT_STEPMOTO_STEP]==cmdCH)
@@ -427,7 +426,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int index = _Str2Int(mCmdParams[1]);
       int delayVal = _Str2Int(mCmdParams[2]);
 
-      _StepMotoStep(index, delayVal);
+      StepMotoStep(index, delayVal);
 #endif
     }
     else if (sOptTypeVal[OT_LCI2C_INIT] == cmdCH)
@@ -437,14 +436,14 @@ void MK_Arduino::OnCMD(String &cmdStr)
       int numCols = _Str2Int(mCmdParams[2]);
       int numRows = _Str2Int(mCmdParams[3]);
       
-      _LCI2C_Init(addr, numCols, numRows);
+      LCI2C_Init(addr, numCols, numRows);
 #endif
     }
     else if (sOptTypeVal[OT_LCI2C_DO] == cmdCH)
     {
 #if defined MK_SCREEN_I2C
       SCREEN_I2C_DoType doType = (SCREEN_I2C_DoType)_Str2Int(mCmdParams[1]);
-      _LCI2C_Do(doType);
+      LCI2C_Do(doType);
 #endif
     }
     else if (sOptTypeVal[OT_LCI2C_SETCURSOR] == cmdCH)
@@ -452,28 +451,28 @@ void MK_Arduino::OnCMD(String &cmdStr)
 #if defined MK_SCREEN_I2C
       int col = _Str2Int(mCmdParams[1]);
       int row = _Str2Int(mCmdParams[2]);
-      _LCI2C_SetCursor(col, row);
+      LCI2C_SetCursor(col, row);
 #endif
     }
     else if (sOptTypeVal[OT_LCI2C_SETBACKLIGHT] == cmdCH)
     {
 #if defined MK_SCREEN_I2C
       int lt = _Str2Int(mCmdParams[1]);
-      _LCI2C_SetBackLight(lt);
+      LCI2C_SetBackLight(lt);
 #endif
     }
     else if (sOptTypeVal[OT_LCI2C_PRINT] == cmdCH)
     {
 #if defined MK_SCREEN_I2C
       String strVal = cmdStr.substring(3);
-      _LCI2C_Print(strVal);
+      LCI2C_Print(strVal);
 #endif
     }
     else if (sOptTypeVal[OT_LCI2C_PRINTBYTE] == cmdCH)
     {
 #if defined MK_SCREEN_I2C
       int val = _Str2Int(mCmdParams[1]);
-      _LCI2C_PrintByte(val);
+      LCI2C_PrintByte(val);
 #endif
     }
   }

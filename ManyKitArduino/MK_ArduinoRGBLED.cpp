@@ -2,15 +2,13 @@
 
 #include "MK_Arduino.h"
 
-#if defined MK_LEDSTRIP
+#if defined MK_RGBLED
 
 //----------------------------------------------------------------------------
-void MK_Arduino::RGBLEDInit(MK_Pin pin, int num)
+void MK_Arduino::RGBLEDInit(int pin, int num)
 {
-    int pinArduino = MK_Pin2Pin(pin);
-
     mWS2812 = WS2812(num);
-    mWS2812.setOutput(pinArduino);
+    mWS2812.setOutput(pin);
 }
 //----------------------------------------------------------------------------
 void MK_Arduino::RGBLEDSetColor(int index, int r, int g, int b)

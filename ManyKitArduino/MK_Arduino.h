@@ -57,7 +57,7 @@
 #include "MK_DHT.h"
 #endif
 
-#if defined MK_LEDSTRIP
+#if defined MK_RGBLED
 #include "MK_WS2812.h"
 #endif
 
@@ -275,27 +275,16 @@ public:
   void OnCMDGroup(String &cmdStr);
   void OnCMD(String &cmdStr);
 
-  // to get pin values by timer
-  void CalPinVals();
-
-  void _PinMode(MK_Pin pin, MK_PMode mode);
-  void _DigitalWrite(MK_Pin pin, bool isHigh);
-  int _DigitalRead(MK_Pin pin);
-  void _PwmWrite(MK_Pin pin, int val);
-  void _AnalogWrite(MK_Pin pin, int val);
-  int _AnalogRead(MK_Pin pin);
-  void _ServerInit(int index, MK_Pin pin);
-  void _ServerWrite(int index, int val);
-  void _DistInit(MK_Pin trigger, MK_Pin echo);
-  float _GetDist();
-
 #if defined MK_DHT
-  void DHTInit(MK_Pin pin);
+  void DHTInit(int pin);
+  int GetTemperature();
+  int GetHumidity();
   void _DHTSendTemperatureHumidity();
 #endif
 
-#if defined MK_LEDSTRIP
-  void RGBLEDInit(MK_Pin pin, int num);
+public:
+#if defined MK_RGBLED
+  void RGBLEDInit(int pin, int num);
   void RGBLEDSetColor(int index, int r, int g, int b);
 #endif
 
@@ -320,8 +309,6 @@ public:
   void SegmentDisplayInt(int val);
   void SegmentDisplayFloat(float val);
 #endif
-
-  MK_PMode PinModes[P_MAX_TYPE];
 
 private:
   String I2Str(int val);
@@ -365,9 +352,16 @@ public:
   void MotoInit10111213();
   void MotoInit298N(int pinL, int pinL1, int pinLS, int pinR, int pinR1, int pinRS);
   void MotoSpeedInit(int encorderLA, int encorderLB, int encorderRA, int encorderRB);
+
+  void VehicleRun(int i, int dir, int spd);
+  void VehicleSimpleRun(int dir, int spd);
+  void VehicleStop();
+
   void LeftRun(int val, int spd);
   void RightRun(int val, int spd);
-  void _SendSpeed();
+  double VehicleGetSpeed(int i);
+  int VehicleGetDir(int i);
+  void _VehicleSendSpeed();
 #endif
 
   void MP3Init(int pinR, int pinT);
@@ -394,10 +388,10 @@ public:
   void _SetTime();
   
 #if defined MK_STEPMOTO
-  void _StepMotoInit(int index, int pinVCC, int pincPLS, int pinDir, int pinEnable);
-  void _StepMotoEnable(int index, bool enable);
-  void _StepMotoDir(int index, bool forward);
-  void _StepMotoStep(int index, int delayVal);
+  void StepMotoInit(int index, int pinVCC, int pincPLS, int pinDir, int pinEnable);
+  void StepMotoEnable(int index, bool enable);
+  void StepMotoDir(int index, bool forward);
+  void StepMotoStep(int index, int delayVal);
 #endif
 
 public:
@@ -480,9 +474,11 @@ private:
 #if defined MK_DHT
   ManyKit_DHT mDHT;
   bool mIsInitedDHT;
+  float mTemperature;
+  float mHumidity;
 #endif
 
-#if defined MK_LEDSTRIP
+#if defined MK_RGBLED
   WS2812 mWS2812;
 #endif
 
@@ -532,13 +528,14 @@ public:
 #endif
 
 #if defined MK_SCREEN_I2C
+  void LCI2C_Init(int addr = 0x3F, int numCols=16, int numRows=2);
+  void LCI2C_Do(SCREEN_I2C_DoType doType);
+  void LCI2C_SetCursor(int col, int row);
+  void LCI2C_SetBackLight(int val);
+  void LCI2C_Print(String val);
+  void LCI2C_PrintByte(int selfCreateCharIndex);
+
   LiquidCrystal_I2C *mLiquidCrystal_I2C;
-  void _LCI2C_Init(int addr = 0x3F, int numCols=16, int numRows=2);
-  void _LCI2C_Do(SCREEN_I2C_DoType doType);
-  void _LCI2C_SetCursor(int col, int row);
-  void _LCI2C_SetBackLight(int val);
-  void _LCI2C_Print(String val);
-  void _LCI2C_PrintByte(int selfCreateCharIndex);
 #endif
 };
 

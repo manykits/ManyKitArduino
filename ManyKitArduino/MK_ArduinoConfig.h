@@ -6,10 +6,9 @@
 //#define MK_SERVO
 
 //#define MK_MOTO
+//#define MK_PID
 
 //#define MK_IR 1
-
-//#define MK_PID
 
 //#define MK_STEPMOTO
 
@@ -19,7 +18,7 @@
 
 //#define MK_SCREEN_I2C
 
-//#define MK_LEDSTRIP
+//#define MK_RGBLED
 
 //#define MK_LEDMATRIX
 

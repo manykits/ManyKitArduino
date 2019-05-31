@@ -22,7 +22,7 @@
 
 #include "MK_ArduinoConfig.h"
 
-#if defined MK_LEDSTRIP
+#if defined MK_RGBLED
 
 #include <avr/interrupt.h>
 #include <avr/io.h>

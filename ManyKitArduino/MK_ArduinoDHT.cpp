@@ -5,13 +5,24 @@
 #if defined MK_DHT
 
 //----------------------------------------------------------------------------
-void MK_Arduino::DHTInit(MK_Pin pin)
+void MK_Arduino::DHTInit(int pin)
 {
-  int pinArduino = MK_Pin2Pin(pin);
-  pinMode(pinArduino, OUTPUT);
-  mDHT = ManyKit_DHT(pinArduino, MK_DHTTYPE);
+  pinMode(pin, OUTPUT);
+  mDHT = ManyKit_DHT(pin, MK_DHTTYPE);
   mDHT.begin();
   mIsInitedDHT = true;
+  mTemperature = 0.0f;
+  mHumidity = 0.0f;
+}
+//----------------------------------------------------------------------------
+int MK_Arduino::GetTemperature()
+{
+  return mTemperature;
+}
+//----------------------------------------------------------------------------
+int MK_Arduino::GetHumidity()
+{
+  return mHumidity;
 }
 //----------------------------------------------------------------------------
 void MK_Arduino::_DHTSendTemperatureHumidity()
@@ -23,6 +34,9 @@ void MK_Arduino::_DHTSendTemperatureHumidity()
 
     if (!isnan(humi) && !isnan(temp))
     {
+      mTemperature = temp;
+      mHumidity = humi;
+
       unsigned char cmdCh = sOptTypeVal[OT_RETURN_DHTTEMP];
       char strCMDCh[32];
       memset(strCMDCh, 0, 32);

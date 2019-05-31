@@ -3,7 +3,7 @@
 
 #include "MK_ArduinoConfig.h"
 
-#if defined MK_LEDSTRIP
+#if defined MK_RGBLED
 
 /*
 Control a RGB led with Hue, Saturation and Brightness (HSB / HSV )

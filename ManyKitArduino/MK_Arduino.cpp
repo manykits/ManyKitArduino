@@ -127,11 +127,6 @@ void MK_Arduino::Init(bool isReset)
 
   digitalWrite(13, LOW);
 
-  for (int i = P_0; i <= P_MAX_TYPE; i++)
-  {
-    PinModes[i] = PM_OUTPUT;
-  }
-
   mpCMD = NULL;
 
   mCMDIndexTemp = 0;
@@ -236,6 +231,8 @@ void MK_Arduino::Init(bool isReset)
 
 #if defined MK_DHT
   mIsInitedDHT = false;
+  mTemperature = 0;
+  mHumidity = 0;
 #endif
 
 #if defined MK_SCREEN_I2C
@@ -247,119 +244,11 @@ void MK_Arduino::Init(bool isReset)
 #endif
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_PinMode(MK_Pin pin, MK_PMode mode)
-{
-    PinModes[(int)pin] = mode;
-    int p = MK_Pin2Pin(pin);
-    pinMode(p, mode==PM_OUTPUT?OUTPUT:INPUT);
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_DigitalWrite(MK_Pin pin, bool isHigh)
-{
-  int p = MK_Pin2Pin(pin);
-  digitalWrite(p, isHigh?HIGH:LOW);
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_PwmWrite(MK_Pin pin, int val)
-{
-  int p = MK_Pin2Pin(pin);
-  analogWrite(p, val);
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_AnalogWrite(MK_Pin pin, int val)
-{
-  int p = MK_Pin2Pin(pin);
-  analogWrite(p, val);
-}
-//----------------------------------------------------------------------------
-int MK_Arduino::_AnalogRead(MK_Pin pin)
-{
-  int p = MK_Pin2Pin(pin);
-  return analogRead(p);
-}
-//----------------------------------------------------------------------------
-int MK_Arduino::_DigitalRead(MK_Pin pin)
-{
-  int p = MK_Pin2Pin(pin);
-  return digitalRead(p);
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_ServerInit(int index, MK_Pin pin)
-{
-#if defined MK_SERVO
-  int p = MK_Pin2Pin(pin);
-  if (0 <= index && index < NumMaxServer)
-    mServo[index].attach(p);
-#endif
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_ServerWrite(int index, int val)
-{
-#if defined MK_SERVO
-  if (0 <= index && index < NumMaxServer)
-    mServo[index].write(val);
-#endif
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::_DistInit(MK_Pin trigger, MK_Pin echo)
-{
-  int pinT = MK_Pin2Pin(trigger);
-  int pinE = MK_Pin2Pin(echo);
-  _DistInit_(pinT, pinE);
-}
-//----------------------------------------------------------------------------
-float MK_Arduino::_GetDist()
-{
-  return mDist;
-}
-//----------------------------------------------------------------------------
 String MK_Arduino::I2Str(int val)
 {
   char str[25];
   itoa(val, str, 10); // 10 is decimal
   return str;
-}
-//----------------------------------------------------------------------------
-void MK_Arduino::CalPinVals()
-{
-  unsigned char cmdCh = sOptTypeVal[OT_RETURN_DR];
-  char strCMDCh[32];
-  memset(strCMDCh, 0, 32);
-  itoa(cmdCh, strCMDCh, 10);
-    
-  for (int i=P_0; i<=P_13; i++)
-  {
-    if (PM_INPUT == PinModes[i])
-    {
-      int val = digitalRead(i);
-      Serial.print("0000");
-      Serial.print(String(strCMDCh)); 
-      Serial.print(" ");
-      Serial.print(i);
-      Serial.print(" ");
-      Serial.println(val);
-    }
-  }
-  
-  unsigned char cmdCh1 = sOptTypeVal[OT_RETURN_AR];
-  char strCMDCh1[32];
-  memset(strCMDCh1, 0, 32);
-  itoa(cmdCh1, strCMDCh1, 10);
-  
-  for (int i=P_A0; i<=P_A5; i++)
-  {
-    int pin = A0 + (i - P_A0);
-    if (PM_INPUT == PinModes[i])
-    {
-      int val = analogRead(pin);
-      Serial.print("0000");
-      Serial.print(String(strCMDCh1)); 
-      Serial.print(" ");
-      Serial.print(i);
-      Serial.print(" ");
-      Serial.println(val);
-    }
-  }
 }
 //----------------------------------------------------------------------------
 void MK_Arduino::_SendNetID()
@@ -468,7 +357,7 @@ void MK_Arduino::Tick()
     if (millis() - mLastSendGeneralTime >= 100)
     {
       mLastSendGeneralTime = millis();
-      _SendSpeed();
+      _VehicleSendSpeed();
     }
   }
 #endif
@@ -495,10 +384,6 @@ void MK_Arduino::Tick()
 #if defined MK_DHT
   _DHTSendTemperatureHumidity();
 #endif
-}
-void sCalPinValue()
-{
-  MK_Arduino::pxfarduino->CalPinVals();
 }
 //----------------------------------------------------------------------------
 void MK_Arduino::_DistInit_(int pinTrig, int pinEcho)
@@ -648,7 +533,29 @@ void wheelSpeedR()
 }
 #endif
 #if defined MK_MOTO
-void MK_Arduino::_SendSpeed()
+double MK_Arduino::VehicleGetSpeed(int i)
+{
+#if defined MK_PID
+  if (0 == i)
+    return mAbsDurationL;
+  else if (1 == i)
+    return mAbsDurationR;
+#endif
+
+  return 0.0;
+}
+int MK_Arduino::VehicleGetDir(int i)
+{
+#if defined MK_PID
+  if (0 == i)
+    return mDirectionL == true ? 0 : 1;
+  else if (1 == i)
+    return mDirectionR == true ? 0 : 1;
+#endif
+
+  return 0;
+}
+void MK_Arduino::_VehicleSendSpeed()
 {
 #if defined MK_PID
   unsigned char cmdCh = sOptTypeVal[OT_RETURN_MOTOSPD];
@@ -666,7 +573,6 @@ void MK_Arduino::_SendSpeed()
   Serial.println(mAbsDurationR);
   Serial.print(" ");
   Serial.println(mDirectionR ? 1:0);
-
 #endif
 }
 //----------------------------------------------------------------------------
@@ -753,6 +659,56 @@ void MK_Arduino::MotoSpeedInit(int encorderLA, int encorderLB,
 #endif 
   }
 }
+void MK_Arduino::VehicleRun(int i, int dir, int spd)
+{
+  if (0 == dir)
+    spd = 0;
+
+  if (0 == i)
+  {
+    LeftRun(dir, spd);
+  }
+  else if (1 == i)
+  {
+    RightRun(dir, spd);
+  }
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::VehicleSimpleRun(int dir, int spd)
+{
+  if (0 == dir)
+  {
+    spd = 0;
+    LeftRun(0, spd);
+    RightRun(0, spd);
+  }
+  else if (1 == dir)
+  {
+    LeftRun(1, spd);
+    RightRun(1, spd);
+  }
+  else if (2 == dir)
+  {
+    LeftRun(2, spd);
+    RightRun(2, spd);
+  }
+  else if (3 == dir)
+  {
+    LeftRun(2, spd);
+    RightRun(1, spd);
+  }
+  else if (4 == dir)
+  {
+    LeftRun(1, spd);
+    RightRun(2, spd);
+  }
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::VehicleStop()
+{
+  LeftRun(0, 0);
+  RightRun(0, 0);
+}
 //----------------------------------------------------------------------------
 void MK_Arduino::LeftRun(int val, int spd)
 {
@@ -825,7 +781,7 @@ void MK_Arduino::LeftRun(int val, int spd)
         analogWrite(mPinLSpeed, 0);
         mSetPoint_L = 0;
 #if defined MK_PID
-        mIsStopL=true;
+      mIsStopL=true;
 #endif
       }
       else if (1 == val)
@@ -1100,7 +1056,7 @@ void MK_Arduino::_Loop()
 }
 //----------------------------------------------------------------------------
 #if defined MK_STEPMOTO
-void MK_Arduino::_StepMotoInit(int index, int pinVCC, int pincPLS, 
+void MK_Arduino::StepMotoInit(int index, int pinVCC, int pincPLS, 
   int pinDir, int pinEnable)
 {
   if (0<=index && index<NumMaxStepMoto)
@@ -1128,7 +1084,7 @@ void MK_Arduino::_StepMotoInit(int index, int pinVCC, int pincPLS,
   }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_StepMotoEnable(int index, bool enable)
+void MK_Arduino::StepMotoEnable(int index, bool enable)
 {
   if (0<=index && index<NumMaxStepMoto)
   {
@@ -1137,7 +1093,7 @@ void MK_Arduino::_StepMotoEnable(int index, bool enable)
   }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_StepMotoDir(int index, bool forward)
+void MK_Arduino::StepMotoDir(int index, bool forward)
 {
   if (0<=index && index<NumMaxStepMoto)
   {
@@ -1145,7 +1101,7 @@ void MK_Arduino::_StepMotoDir(int index, bool forward)
   }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_StepMotoStep(int index, int delayVal)
+void MK_Arduino::StepMotoStep(int index, int delayVal)
 {
   if (0<=index && index<NumMaxStepMoto)
   {

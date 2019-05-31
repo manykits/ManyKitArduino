@@ -13,7 +13,7 @@
 
 #include "MK_WS2812.h"
 
-#if defined MK_LEDSTRIP
+#if defined MK_RGBLED
 
 /*
   This routine writes an array of bytes with RGB values to the Dataout pin

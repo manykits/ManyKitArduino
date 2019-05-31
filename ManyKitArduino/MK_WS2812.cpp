@@ -14,7 +14,7 @@
 
 #include "MK_WS2812.h"
 
-#if defined MK_LEDSTRIP
+#if defined MK_RGBLED
 
 #include <stdlib.h>
 

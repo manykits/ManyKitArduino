@@ -14,7 +14,7 @@ uint8_t cross[8] = {0x0, 0x1b, 0xe, 0x4, 0xe, 0x1b, 0x0};
 uint8_t retarrow[8] = {0x1, 0x1, 0x5, 0x9, 0x1f, 0x8, 0x4};
 
 //----------------------------------------------------------------------------
-void MK_Arduino::_LCI2C_Init(int addr, int numCols, int numRows)
+void MK_Arduino::LCI2C_Init(int addr, int numCols, int numRows)
 {
     if (mLiquidCrystal_I2C)
     {
@@ -36,7 +36,7 @@ void MK_Arduino::_LCI2C_Init(int addr, int numCols, int numRows)
     mLiquidCrystal_I2C->home();
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LCI2C_Do(SCREEN_I2C_DoType doType)
+void MK_Arduino::LCI2C_Do(SCREEN_I2C_DoType doType)
 {
     if (doType == SCR_INIT)
     {
@@ -187,7 +187,7 @@ void MK_Arduino::_LCI2C_Do(SCREEN_I2C_DoType doType)
     }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LCI2C_SetCursor(int col, int row)
+void MK_Arduino::LCI2C_SetCursor(int col, int row)
 {
     if (mLiquidCrystal_I2C)
     {
@@ -195,7 +195,7 @@ void MK_Arduino::_LCI2C_SetCursor(int col, int row)
     }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LCI2C_SetBackLight(int val)
+void MK_Arduino::LCI2C_SetBackLight(int val)
 {
     if (mLiquidCrystal_I2C)
     {
@@ -203,7 +203,7 @@ void MK_Arduino::_LCI2C_SetBackLight(int val)
     }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LCI2C_Print(String val)
+void MK_Arduino::LCI2C_Print(String val)
 {
     if (mLiquidCrystal_I2C)
     {
@@ -211,7 +211,7 @@ void MK_Arduino::_LCI2C_Print(String val)
     }
 }
 //----------------------------------------------------------------------------
-void MK_Arduino::_LCI2C_PrintByte(int selfCreateCharIndex)
+void MK_Arduino::LCI2C_PrintByte(int selfCreateCharIndex)
 {
     if (mLiquidCrystal_I2C)
     {
