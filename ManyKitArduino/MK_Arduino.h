@@ -534,4 +534,6 @@ public:
 #endif
 };
 
+extern MK_Arduino mk;
+
 #endif
