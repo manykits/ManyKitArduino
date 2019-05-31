@@ -11,7 +11,7 @@
 
 //#define MK_STEPMOTO
 
-#define MK_RCSWITCH
+//#define MK_RCSWITCH
 
 //#define MK_DHT
 

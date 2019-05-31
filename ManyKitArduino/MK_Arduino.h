@@ -367,11 +367,7 @@ public:
   void _LeftRun(int val, int spd);
   void _RightRun(int val, int spd);
   void _SendPID();
-  
-#if defined MK_SSD1306
-  void _ScreenInit();
-#endif
-
+ 
   void _MP3Init_(int pinR, int pinT);
   void _MP3Do(Mp3PlayType type);
   void _MP3FolderPlay(int folder, int index);

@@ -12,10 +12,6 @@ void setup()
 #if defined MA_AXIS
   mk._InitAxis();
 #endif
-
-#if defined MA_SSD1306
-  mk._ScreenInit();
-#endif
 }
 
 void loop()
