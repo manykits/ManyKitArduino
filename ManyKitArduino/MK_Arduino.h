@@ -281,7 +281,7 @@ public:
 
   // cmds process
   void OnCMDGroup(String &cmdStr);
-  void OnCMD(String &cmdStr);
+  void OnCMD(String *cmdParams, String &cmdStr);
 
 #if defined MK_DHT
   void DHTInit(int pin);
@@ -335,9 +335,6 @@ public:
 
 #define NumCMDParams 7
   String mCmdParams[NumCMDParams];
-  int mCMDIndexTemp;
-  char *mpCMDParam;
-
 public:
   void Init(bool isReset=false);
   void Reset();

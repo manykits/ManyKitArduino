@@ -191,14 +191,16 @@ void _ESPTimerAfter()
   }
   Serial.println("MDNS responder started!");
 
-  mk.mESPServer.on("/01", []() {
+  mk.mESPServer.on("/ck01", []() {
     String msg;
     uint8_t numArg = mk.mESPServer.args();
     msg += "numarg:" + mk.I2Str(numArg);
     msg += "\n";
     for (uint8_t i = 0; i < numArg; i++)
     {
-      msg +=  mk.mESPServer.argName(i) + ":" + mk.mESPServer.arg(i) + "\n";
+      msg +=  mk.mESPServer.argName(i) + ":" + mk.mESPServer.arg(i);
+      if (i < numArg-1)
+         msg += " "; 
     }
     Serial.println(msg);
     mk.mESPServer.send(202, "text/plain", "Suc:" + msg);
@@ -232,7 +234,6 @@ void MK_Arduino::Init(bool isReset)
 
   mpCMD = NULL;
 
-  mCMDIndexTemp = 0;
   mpCMD = 0;
 
   mPinDistTrigger = 0;
@@ -426,7 +427,7 @@ void MK_Arduino::Tick()
         // to compatile with PHOENIXEngine
         // 2 for length,2 for id
         String cmdStr = mk.RecvStr.substring(4);
-        mk.OnCMD(cmdStr);
+        mk.OnCMD(mCmdParams, cmdStr);
       }
       mk.RecvStr = "";
     }
@@ -464,7 +465,6 @@ void MK_Arduino::Tick()
     }
   }
 #endif
-
 #if defined MK_IR
   decode_results iresultes;
   if (mIRrecv && mIRrecv->decode(&iresultes))
@@ -474,7 +474,6 @@ void MK_Arduino::Tick()
     _SendIRRecv(val);
   }
 #endif
-
 #if defined MK_PID
   if (mIsUseSpeedEncorder && mPID && mPID1)
   {
@@ -500,7 +499,6 @@ void MK_Arduino::Tick()
     }
   }
 #endif
-
 #if defined MK_RCSWITCH
  if (mRCSwitch.available()) 
  {   
@@ -519,11 +517,9 @@ void MK_Arduino::Tick()
     mRCSwitch.resetAvailable();
   }
 #endif
-
 #if defined MK_DHT
   _DHTSendTemperatureHumidity();
 #endif
-
 #if defined MK_ESP_NETWORK
   if (mIsESPInited)
   {
@@ -539,6 +535,8 @@ void MK_Arduino::Tick()
       if (len > 0)
       {
         mIncomingPacket[len] = 0;
+        String strIncoming(mIncomingPacket);
+        mk.OnCMD(mCmdParams, strIncoming);
       }
     }
   }
