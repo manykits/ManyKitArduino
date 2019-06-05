@@ -1,0 +1,38 @@
+﻿<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MANYKIT IOT</title>
+    <link href="css/jquery-ui.min.css" rel="stylesheet" type="text/css">
+    <style type="text/css">
+    body {
+        font-family: sans-serif;
+    }
+    #slider {
+    width: 300px;
+    margin: 15px;
+    }
+    </style>
+  </head>
+
+  <body>
+    <h1>MANYKIT IOT</h1>
+    01测试：
+    <div id="check01">
+		<input type="radio" id="LED_OFF" class="01" checked="checked" value="0" name="SW"><label for="LED_OFF"> 0 </label>
+        <input type="radio" id="LED_ON" class="01" value="1" name="SW"><label for="LED_ON"> 1 </label>
+    </div>
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script>
+    $(function() {
+    $( "#check01" ).buttonset();
+    $(".01").change(function(evt) {
+        var state = $(this).val();
+        $.post("/01", {01:state});
+    });
+    });
+    </script>
+  </body>
+</html>

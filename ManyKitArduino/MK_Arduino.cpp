@@ -191,20 +191,17 @@ void _ESPTimerAfter()
   }
   Serial.println("MDNS responder started!");
 
-  mk.mESPServer.on("/sw", []() {
+  mk.mESPServer.on("/01", []() {
     String msg;
-    msg += mk.mESPServer.args();
+    uint8_t numArg = mk.mESPServer.args();
+    msg += "numarg:" + mk.I2Str(numArg);
     msg += "\n";
-    for (uint8_t i = 0; i < mk.mESPServer.args(); i++)
+    for (uint8_t i = 0; i < numArg; i++)
     {
-      msg += " " + mk.mESPServer.argName(i) + ": " + mk.mESPServer.arg(i) + "\n";
+      msg +=  mk.mESPServer.argName(i) + ":" + mk.mESPServer.arg(i) + "\n";
     }
-
     Serial.println(msg);
-    Serial.println(mk.mESPServer.argName(0));
-    Serial.println(mk.mESPServer.arg(0));
-
-    mk.mESPServer.send(202, "text/plain", "Success:" + msg);
+    mk.mESPServer.send(202, "text/plain", "Suc:" + msg);
   });
 
   // process root request path & not exist path
@@ -354,19 +351,21 @@ void MK_Arduino::Init(bool isReset)
 #endif
 
 #if defined MK_ESP_NETWORK
-  Serial.begin(115200);
-  Serial.println("manykit arduino use esp mode");
-  
-  mESPServer = ESP8266WebServer(80);
-
   mESPUDPPort = 2333;
-
-  mIsESPInited = false;
-  if (!AutoConfig())
-  {
-    SmartConfig();
-  }
-  mTimer.after(1000, _ESPTimerAfter);
+  mIsESPInited = false; 
+    
+ if (isReset)
+ {
+    Serial.begin(9600);
+    Serial.println("manykit arduino use esp mode");
+    
+    mESPServer = ESP8266WebServer(80);
+    if (!AutoConfig())
+    {
+      SmartConfig();
+    }
+     mTimer.after(1000, _ESPTimerAfter);
+ }  
 #else
   if (isReset)
   {
@@ -410,8 +409,9 @@ void MK_Arduino::_SendVersion()
     Serial.println(String(strCMDCh)); 
 }
 //----------------------------------------------------------------------------
-boolean result;
-boolean resultR;
+bool result = false;
+bool resultR = false;
+bool doSendVersion = true;
 //----------------------------------------------------------------------------
 void MK_Arduino::Tick()
 {
@@ -435,42 +435,28 @@ void MK_Arduino::Tick()
       mk.RecvStr += c;
     }
   }
-  
-  unsigned long tick = millis();       
-  if (tick - mLastSendVersionTime >= 2000)
-  {
-      mLastSendVersionTime =tick;
-      _SendVersion();
-  }
 
   mTimer.update();
+
+#if defined MK_ESP_NETWORK
+  doSendVersion = mIsESPInited;    
+#endif
+
+   if (doSendVersion)
+   {
+      unsigned long tick = millis();       
+      if (tick - mLastSendVersionTime >= 2000)
+      {
+          mLastSendVersionTime =tick;
+          _SendVersion();
+      }  
+   }
 
 #if defined MK_STEPMOTO
   for (int i=0; i<NumMaxStepMoto; i++)
   {
     if(mStepMotoEnable[i])
     {
-      /*
-      unsigned long stp = (millis() - mStepMotoRunTick[i])*1000;
-      if (stp >= 10)
-      {
-        if (0 == mStepMotoRunVal[i])
-        {
-          digitalWrite(mStepMotoPLSPin[i], HIGH);
-          mStepMotoRunVal[i] = 1;
-        }
-        else if (1 == mStepMotoRunVal[i])
-        {
-          digitalWrite(mStepMotoPLSPin[i], LOW);
-          mStepMotoRunVal[i] = 0;  
-        }
-
-        mStepMotoRunTick[i] = tick;
-      }
-      */
-      
-     //analogWrite(mStepMotoPLSPin[i], mStepMotoRunDelay[i]);
-      
       digitalWrite(mStepMotoPLSPin[i], HIGH);
       delayMicroseconds(mStepMotoRunDelay[i]);
       digitalWrite(mStepMotoPLSPin[i], LOW);
@@ -546,8 +532,8 @@ void MK_Arduino::Tick()
     int packetSize = mWiFiUDP.parsePacket();
     if (packetSize > 0)
     {
-      remoteIP = mWiFiUDP.remoteIP();
-      remotePort = mWiFiUDP.remotePort();
+      IPAddress remoteIP = mWiFiUDP.remoteIP();
+      uint16_t remotePort = mWiFiUDP.remotePort();
 
       int len = mWiFiUDP.read(mIncomingPacket, 536);
       if (len > 0)

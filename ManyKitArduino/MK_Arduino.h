@@ -318,7 +318,7 @@ public:
   void SegmentDisplayFloat(float val);
 #endif
 
-private:
+public:
   String I2Str(int val);
   int _Str2IO(String &str);
   int _Str2Pin(String &str);
