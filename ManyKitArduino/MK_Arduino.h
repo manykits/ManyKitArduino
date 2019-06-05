@@ -105,6 +105,14 @@ enum SCREEN_I2C_DoType
 };
 #endif
 
+#if defined MK_ESP_NETWORK
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#include <FS.h>
+#include <WiFiUdp.h>
+#endif
+
 enum MK_Pin
 {
     P_0 = 0,
@@ -537,6 +545,17 @@ public:
   void LCI2C_PrintByte(int selfCreateCharIndex);
 
   LiquidCrystal_I2C *mLiquidCrystal_I2C;
+#endif
+
+#if defined MK_ESP_NETWORK
+  bool AutoConfig();
+  void SmartConfig();
+
+  ESP8266WebServer mESPServer;
+  WiFiUDP mWiFiUDP;
+  int mESPUDPPort;
+  char mIncomingPacket[537];
+  bool mIsESPInited;
 #endif
 };
 

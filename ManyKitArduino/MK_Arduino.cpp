@@ -117,6 +117,114 @@ MK_Arduino::MK_Arduino()
   Init(false);
 }
 //----------------------------------------------------------------------------
+String _GetContentType(String filename)
+{
+  if (mk.mESPServer.hasArg("download"))
+    return "application/octet-stream";
+    
+  else if (filename.endsWith(".htm"))
+    return "text/html";
+  else if (filename.endsWith(".html"))
+    return "text/html";
+  else if (filename.endsWith(".css"))
+    return "text/css";
+  else if (filename.endsWith(".js"))
+    return "application/javascript";
+  else if (filename.endsWith(".png"))
+    return "image/png";
+  else if (filename.endsWith(".gif"))
+    return "image/gif";
+  else if (filename.endsWith(".jpg"))
+    return "image/jpeg";
+  else if (filename.endsWith(".ico"))
+    return "image/x-icon";
+  else if (filename.endsWith(".xml"))
+    return "text/xml";
+  else if (filename.endsWith(".pdf"))
+    return "application/x-pdf";
+  else if (filename.endsWith(".zip"))
+    return "application/x-zip";
+  else if (filename.endsWith(".gz"))
+    return "application/x-gzip";
+  return "text/plain";
+}
+bool _HandleFileRead(String path)
+{
+  Serial.println("handleFileRead: " + path);
+  if (path.endsWith("/"))
+    path += "index.htm";
+  String contentType = _GetContentType(path);
+  if (SPIFFS.exists(path))
+  {
+    File file = SPIFFS.open(path, "r");
+    size_t sent = mk.mESPServer.streamFile(file, contentType);
+    file.close();
+    return true;
+  }
+  return false;
+}
+//----------------------------------------------------------------------------
+const char* host = "MANYKIT";
+void _ESPTimerAfter()
+{
+  IPAddress ip = WiFi.localIP();
+  IPAddress ipzero;
+  ipzero.fromString("0.0.0.0");
+  while (ip == ipzero)
+  {
+    ip = WiFi.localIP();
+    Serial.print("IP address:");
+    Serial.println(ip);
+    delay(500);
+  }
+
+  // file system
+  SPIFFS.begin();
+
+  if (!MDNS.begin(host, ip))
+  {
+    Serial.println("Error setting up MDNS responder");
+    while (1)
+    {
+      delay(500);
+    }
+  }
+  Serial.println("MDNS responder started!");
+
+  mk.mESPServer.on("/sw", []() {
+    String msg;
+    msg += mk.mESPServer.args();
+    msg += "\n";
+    for (uint8_t i = 0; i < mk.mESPServer.args(); i++)
+    {
+      msg += " " + mk.mESPServer.argName(i) + ": " + mk.mESPServer.arg(i) + "\n";
+    }
+
+    Serial.println(msg);
+    Serial.println(mk.mESPServer.argName(0));
+    Serial.println(mk.mESPServer.arg(0));
+
+    mk.mESPServer.send(202, "text/plain", "Success:" + msg);
+  });
+
+  // process root request path & not exist path
+  mk.mESPServer.onNotFound([]() {
+    if (!_HandleFileRead(mk.mESPServer.uri()))
+      mk.mESPServer.send(404, "text/plain", "FileNotFound");
+  });
+
+  mk.mESPServer.begin();
+  Serial.println("HTTP server started");
+
+  String ipStr = ip.toString();
+  MDNS.setInstanceName("MANYKIT IOT:" + ipStr);
+  MDNS.addService("http", "tcp", 80);
+
+  mk.mWiFiUDP.begin(mk.mESPUDPPort);
+
+  mk.mIsESPInited = true;
+}
+//----------------------------------------------------------------------------
 void MK_Arduino::Init(bool isReset)
 {
   RecvStr = "";
@@ -124,8 +232,6 @@ void MK_Arduino::Init(bool isReset)
   mSettedTimeMe = 0;
   mLastSendVersionTime = 0;
   mLastSendGeneralTime = 0;
-
-  digitalWrite(13, LOW);
 
   mpCMD = NULL;
 
@@ -242,6 +348,32 @@ void MK_Arduino::Init(bool isReset)
   }
   mLiquidCrystal_I2C = 0;
 #endif
+
+#if defined MA_AXIS
+  mk._InitAxis();
+#endif
+
+#if defined MK_ESP_NETWORK
+  Serial.begin(115200);
+  Serial.println("manykit arduino use esp mode");
+  
+  mESPServer = ESP8266WebServer(80);
+
+  mESPUDPPort = 2333;
+
+  mIsESPInited = false;
+  if (!AutoConfig())
+  {
+    SmartConfig();
+  }
+  mTimer.after(1000, _ESPTimerAfter);
+#else
+  if (isReset)
+  {
+     Serial.begin(9600);
+  }
+  digitalWrite(13, LOW);
+#endif
 }
 //----------------------------------------------------------------------------
 String MK_Arduino::I2Str(int val)
@@ -283,6 +415,27 @@ boolean resultR;
 //----------------------------------------------------------------------------
 void MK_Arduino::Tick()
 {
+  while (Serial.available())
+  {
+    char c = Serial.read();
+    
+    if ('\n' == c)
+    {
+      if (mk.RecvStr.length() > 0)
+      {
+        // to compatile with PHOENIXEngine
+        // 2 for length,2 for id
+        String cmdStr = mk.RecvStr.substring(4);
+        mk.OnCMD(cmdStr);
+      }
+      mk.RecvStr = "";
+    }
+    else
+    {
+      mk.RecvStr += c;
+    }
+  }
+  
   unsigned long tick = millis();       
   if (tick - mLastSendVersionTime >= 2000)
   {
@@ -383,6 +536,26 @@ void MK_Arduino::Tick()
 
 #if defined MK_DHT
   _DHTSendTemperatureHumidity();
+#endif
+
+#if defined MK_ESP_NETWORK
+  if (mIsESPInited)
+  {
+    mESPServer.handleClient();
+
+    int packetSize = mWiFiUDP.parsePacket();
+    if (packetSize > 0)
+    {
+      remoteIP = mWiFiUDP.remoteIP();
+      remotePort = mWiFiUDP.remotePort();
+
+      int len = mWiFiUDP.read(mIncomingPacket, 536);
+      if (len > 0)
+      {
+        mIncomingPacket[len] = 0;
+      }
+    }
+  }
 #endif
 }
 //----------------------------------------------------------------------------
