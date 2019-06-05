@@ -208,7 +208,7 @@ void MK_Arduino::Init(bool isReset)
 #endif
 
 #if defined MK_AXIS
-      mPitch = 0.0f;
+  mPitch = 0.0f;
   mRoll = 0.0f;
   mYaw = 0.0f;
   mAxisTickEvent = -1;

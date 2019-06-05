@@ -65,7 +65,7 @@
 #include "MK_LEDMatrix.h"
 #endif
 
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
 #include "MK_SegmentDisplay.h"
 #endif
 
@@ -302,7 +302,7 @@ public:
   void LEDMatrixLightPos(int8_t x, int8_t y, int width, bool onOff);
 #endif
 
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
   void SegmentInit(int clkPin, int dataPin);
   void SegmentSetBrightness(int brightness);
   void SegmentClear();
@@ -523,7 +523,7 @@ public:
   RCSwitch mRCSwitch;
 #endif
 
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
   SegmentDisplay mSegmentDisplay;
 #endif
 

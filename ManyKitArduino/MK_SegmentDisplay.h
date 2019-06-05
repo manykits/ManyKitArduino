@@ -5,7 +5,7 @@
 
 #include "MK_ArduinoConfig.h"
 
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
 
 //************definitions for TM1637*********************
 #include <stdint.h>

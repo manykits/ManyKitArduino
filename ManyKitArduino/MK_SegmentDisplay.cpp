@@ -2,7 +2,7 @@
 
 #include "MK_SegmentDisplay.h"
 
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
 //----------------------------------------------------------------------------
 const uint8_t TubeTab[] PROGMEM = 
 {

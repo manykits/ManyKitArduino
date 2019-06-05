@@ -2,7 +2,7 @@
 
 #include "MK_Arduino.h"
 
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
 //----------------------------------------------------------------------------
 void MK_Arduino::SegmentInit(int clkPin, int dataPin)
 {

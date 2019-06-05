@@ -4,6 +4,7 @@
 #include "MK_ArduinoConfig.h"
 
 #if defined MK_XH711
+// weight
 
 #if ARDUINO >= 100
 #include "Arduino.h"

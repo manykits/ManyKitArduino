@@ -323,7 +323,7 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_SEGMENT_I]==cmdCH)
     {
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
       int pinClk = _Str2Pin(mCmdParams[1]);
       int pinData = _Str2Pin(mCmdParams[2]);
       SegmentInit(pinClk, pinData);
@@ -331,20 +331,20 @@ void MK_Arduino::OnCMD(String &cmdStr)
     }
     else if (sOptTypeVal[OT_SEGMENT_BRIGHTNESS]==cmdCH)
     {
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
       int val = _Str2Int(mCmdParams[1]);
       SegmentSetBrightness(val);
 #endif
     }
     else if (sOptTypeVal[OT_SEGMENT_CLEAR]==cmdCH)
     {
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
       SegmentClear();
 #endif
     }
     else if (sOptTypeVal[OT_SEGMENT_DISPLAY]==cmdCH)
     {
-#if defined MK_SEGMENT7
+#if defined MK_SEGMENT
       int type = _Str2Int(mCmdParams[1]);
       float val = _Str2Float(mCmdParams[2]);
       if (1 == type)
