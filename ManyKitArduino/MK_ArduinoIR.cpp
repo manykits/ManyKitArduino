@@ -41,6 +41,18 @@ void MK_Arduino::_SendIRRecv(int val)
     Serial.print(" ");
     Serial.println(val);
 
+#if defined MK_ESP_NETWORK
+    if (0 != mRemotePort)
+    {
+        String dst = String("0000") + String(strCMDCh) +
+                     String(" ") + I2Str(val) + String("\n");
+
+        mWiFiUDP.beginPacket(mRemoteIP, mRemotePort);
+        mWiFiUDP.write((const char *)&dst[0], dst.length());
+        mWiFiUDP.endPacket();
+    }
+#endif
+
     // if (7611 == val)
     // {
     //     LeftRun(1,255);

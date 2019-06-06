@@ -71,6 +71,19 @@ void MK_Arduino::OnCMD(String *cmdParams, String &cmdStr)
       Serial.print(index);
       Serial.print(" ");
       Serial.println(val);
+
+#if defined MK_ESP_NETWORK
+      if (0 != mRemotePort)
+      {
+        String dst = String("0000") + String(strCMDCh) +
+                     String(" ") + I2Str(index) +
+                     String(" ") + I2Str(val) + String("\n");
+
+        mWiFiUDP.beginPacket(mRemoteIP, mRemotePort);
+        mWiFiUDP.write((const char *)&dst[0], dst.length());
+        mWiFiUDP.endPacket();
+      }
+#endif
     }
     else if (sOptTypeVal[OT_RETURN_AR]==cmdCH)
     {
@@ -89,6 +102,19 @@ void MK_Arduino::OnCMD(String *cmdParams, String &cmdStr)
       Serial.print(index);
       Serial.print(" ");
       Serial.println(val);
+
+#if defined MK_ESP_NETWORK
+      if (0 != mRemotePort)
+      {
+        String dst = String("0000") + String(strCMDCh) +
+                     String(" ") + I2Str(index) +
+                     String(" ") + I2Str(val) + String("\n");
+
+        mWiFiUDP.beginPacket(mRemoteIP, mRemotePort);
+        mWiFiUDP.write((const char *)&dst[0], dst.length());
+        mWiFiUDP.endPacket();
+      }
+#endif
     }
     else if (sOptTypeVal[OT_SVR_I]==cmdCH)
     {
@@ -132,6 +158,18 @@ void MK_Arduino::OnCMD(String *cmdParams, String &cmdStr)
       Serial.print(String(strCMDCh)); 
       Serial.print(" ");
       Serial.println(mDist);
+
+#if defined MK_ESP_NETWORK
+      if (0 != mRemotePort)
+      {
+        String dst = String("0000") + String(strCMDCh) +
+                     String(" ") + F2Str(mDist) + String("\n");
+
+        mWiFiUDP.beginPacket(mRemoteIP, mRemotePort);
+        mWiFiUDP.write((const char *)&dst[0], dst.length());
+        mWiFiUDP.endPacket();
+      }
+#endif
     }
     else if (sOptTypeVal[OT_MOTO_I]==cmdCH)
     {

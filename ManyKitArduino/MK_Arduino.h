@@ -320,6 +320,7 @@ public:
 
 public:
   String I2Str(int val);
+  String F2Str(float val);
   int _Str2IO(String &str);
   int _Str2Pin(String &str);
   MK_Pin _Str2MK_Pin(String &str);
@@ -553,6 +554,9 @@ public:
   int mESPUDPPort;
   char mIncomingPacket[537];
   bool mIsESPInited;
+
+  IPAddress mRemoteIP;
+  uint16_t mRemotePort;
 #endif
 };
 

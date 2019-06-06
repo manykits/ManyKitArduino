@@ -48,6 +48,19 @@ void MK_Arduino::_DHTSendTemperatureHumidity()
       Serial.print(temp);
       Serial.print(" ");
       Serial.println(humi);
+
+#if defined MK_ESP_NETWORK
+      if (0 != mRemotePort)
+      {
+        String dst = String("0000") + String(strCMDCh) +
+                     String(" ") + F2Str(temp) +
+                     String(" ") + F2Str(humi) + String("\n");
+
+        mWiFiUDP.beginPacket(mRemoteIP, mRemotePort);
+        mWiFiUDP.write((const char *)&dst[0], dst.length());
+        mWiFiUDP.endPacket();
+      }
+#endif
     }
   }
 }

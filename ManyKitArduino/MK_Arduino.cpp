@@ -117,6 +117,7 @@ MK_Arduino::MK_Arduino()
   Init(false);
 }
 //----------------------------------------------------------------------------
+#if defined MK_ESP_NETWORK
 String _GetContentType(String filename)
 {
   if (mk.mESPServer.hasArg("download"))
@@ -223,6 +224,7 @@ void _ESPTimerAfter()
 
   mk.mIsESPInited = true;
 }
+#endif
 //----------------------------------------------------------------------------
 void MK_Arduino::Init(bool isReset)
 {
@@ -353,10 +355,12 @@ void MK_Arduino::Init(bool isReset)
 
 #if defined MK_ESP_NETWORK
   mESPUDPPort = 2333;
-  mIsESPInited = false; 
-    
- if (isReset)
- {
+  mIsESPInited = false;
+
+  mRemotePort = 0;
+
+  if (isReset)
+  {
     Serial.begin(9600);
     Serial.println("manykit arduino use esp mode");
     
@@ -374,6 +378,13 @@ void MK_Arduino::Init(bool isReset)
   }
   digitalWrite(13, LOW);
 #endif
+}
+//----------------------------------------------------------------------------
+String MK_Arduino::F2Str(float val)
+{
+  char str[16];
+  dtostrf(val, 12, 4, str);
+  return str;
 }
 //----------------------------------------------------------------------------
 String MK_Arduino::I2Str(int val)
@@ -407,7 +418,18 @@ void MK_Arduino::_SendVersion()
     itoa(cmdCh, strCMDCh, 10);
         
     Serial.print("0000");
-    Serial.println(String(strCMDCh)); 
+    Serial.println(String(strCMDCh));
+
+#if defined MK_ESP_NETWORK
+    if (0 != mRemotePort)
+    {
+      String dst = String("0000") + String(strCMDCh) + String("\n");
+
+      mWiFiUDP.beginPacket(mRemoteIP, mRemotePort);
+      mWiFiUDP.write((const char*)&dst[0], dst.length());
+      mWiFiUDP.endPacket();
+    }
+#endif
 }
 //----------------------------------------------------------------------------
 bool result = false;
@@ -514,6 +536,17 @@ void MK_Arduino::Tick()
     Serial.print(" ");
     Serial.println(recvVal);
 
+#if defined MK_ESP_NETWORK
+    if (0 != mRemotePort)
+    {
+      String dst = String("0000") + String(strCMDCh) + String(" ") + I2Str(recvVal) + String("\n");
+
+      mWiFiUDP.beginPacket(mRemoteIP, mRemotePort);
+      mWiFiUDP.write((const char *)&dst[0], dst.length());
+      mWiFiUDP.endPacket();
+    }
+#endif
+
     mRCSwitch.resetAvailable();
   }
 #endif
@@ -528,15 +561,17 @@ void MK_Arduino::Tick()
     int packetSize = mWiFiUDP.parsePacket();
     if (packetSize > 0)
     {
-      IPAddress remoteIP = mWiFiUDP.remoteIP();
-      uint16_t remotePort = mWiFiUDP.remotePort();
+      mRemoteIP = mWiFiUDP.remoteIP();
+      mRemotePort = mWiFiUDP.remotePort();
 
       int len = mWiFiUDP.read(mIncomingPacket, 536);
       if (len > 0)
       {
         mIncomingPacket[len] = 0;
         String strIncoming(mIncomingPacket);
-        mk.OnCMD(mCmdParams, strIncoming);
+        String cmdStr = strIncoming.substring(4, strIncoming.length()-1);
+        Serial.println(cmdStr);
+        mk.OnCMD(mCmdParams, cmdStr);
       }
     }
   }
@@ -730,6 +765,35 @@ void MK_Arduino::_VehicleSendSpeed()
   Serial.println(mAbsDurationR);
   Serial.print(" ");
   Serial.println(mDirectionR ? 1:0);
+
+#if defined MK_ESP_NETWORK
+  if (0 != mRemotePort)
+  {
+    String dst = String("0000") + String(strCMDCh) +
+                 String(" ") + F2Str(mAbsDurationL) +
+                 String(" ") + F2Str(mDirectionL ? 1 : 0) +
+                 String(" ") + F2Str(mAbsDurationR) +
+                 String(" ") + F2Str(mDirectionR ? 1 : 0) +
+                 String("\n");
+
+    mWiFiUDP.beginPacket(mRemoteIP, mRemotePort);
+    mWiFiUDP.write((const char *)&dst[0], dst.length());
+    mWiFiUDP.endPacket();
+  }
+#endif
+
+#if defined MK_ESP_NETWORK
+  if (0 != mRemotePort)
+  {
+    String dst = String("0000") + String(strCMDCh) + 
+      String(" ") + I2Str(recvVal) + String("\n");
+
+    mWiFiUDP.beginPacket(mRemoteIP, mRemotePort);
+    mWiFiUDP.write((const char *)&dst[0], dst.length());
+    mWiFiUDP.endPacket();
+  }
+#endif
+
 #endif
 }
 //----------------------------------------------------------------------------
