@@ -3,7 +3,7 @@
 #ifndef MK_ARDUINOCONFIG_H
 #define MK_ARDUINOCONFIG_H
 
-#define MK_ESP_NETWORK
+//#define MK_ESP_NETWORK
 
 #if defined MK_ESP_NETWORK 
 #define MK_RCSWITCH
