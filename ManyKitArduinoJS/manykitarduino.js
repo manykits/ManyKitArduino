@@ -1,6 +1,7 @@
 // manykitarduino.js
 
 ManyKitSerial = require("./manykitserial")
+ManyKitUDP = require("./manykitudp")
 
 // "100", //OT_TOGET_NETID
 // "101", //OT_RETRUN_NETID
@@ -333,18 +334,41 @@ function boolToArduino(param0) {
     return 0;
 }
 
-// var board = new ManyKitArduino("COM3")
-ManyKitArduino = module.exports = function (port, options, callback) {
-    if (typeof options === "function" || typeof options === "undefined") {
-        callback = options;
-        options = {};
-    }
+ManyKitArduino = module.exports = function (url, port, options, callback) {
+
+    ManyKitArduino.prototype.onReady = function () {
+        var self = this;
+
+        console.log("ManyKitArduino.prototype.ready");
+
+        // manykit
+        self.pins = [];
+        for (var i = 0; i < 30; i++) {
+            self.pins.push({
+                value: 0,
+                report: 1,
+            });
+        }
+        self.dists = [];
+        for (var i = 0; i < 8; i++) {
+            self.dists.push({
+                value: 0
+            });
+        }
+        self.irRecvValue = 0;
+        self.DHTTemperature = 0.0;
+        self.DHTHumidity = 0.0;
+
+        self.isReady = true;
+
+        if (null != self.callback) {
+            self.callback("ready", "");
+        }
+    };
 
     var self = this;
 
-    if (!(self instanceof ManyKitArduino)) {
-        return new ManyKitArduino(port, options, callback);
-    }
+    self.callback = callback;
 
     var defaults = {
         sp: {
@@ -377,28 +401,33 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     self.DHTTemperature = 0.0;
     self.DHTHumidity = 0.0;
 
-    if (typeof port === "object") {
-        self.manykitSerial = port;
-    } else {
-        self.manykitSerial = new ManyKitSerial(port, settings.sp.baudRate);
+    self.url = url;
+    self.port = port;
+
+    if ("" == url)
+    {
+        self.manykitSerial = new ManyKitSerial(self.port, settings.sp.baudRate);
+
+        self.manykitSerial.setFunOnClose(function () {
+            console.log("transport close");
+            self.versionReceived = false;
+        }.bind(self));
+
+        self.manykitSerial.setFunOnDisconnect(function () {
+            console.log("transport disconnect");
+        }.bind(self));
+
+        self.manykitSerial.setFunOnOpen(function () {
+            console.log("transport open");
+        }.bind(self));
+
+        self.manykitSerial.setFunOnError(function (error) {
+            console.log("transport error");
+        }.bind(self));
     }
-
-    self.manykitSerial.setFunOnClose(function () {
-        console.log("transport close");
-        self.versionReceived = false;
-    }.bind(self));
-
-    self.manykitSerial.setFunOnDisconnect(function () {
-        console.log("transport disconnect");
-    }.bind(self));
-
-    self.manykitSerial.setFunOnOpen(function () {
-        console.log("transport open");
-    }.bind(self));
-
-    self.manykitSerial.setFunOnError(function (error) {
-        console.log("transport error");
-    }.bind(self));
+    else{
+         self.manykitUDP = new ManyKitUDP(self.url, self.port);
+    }
 
     function byteToString(arr) {
         if (typeof arr === 'string') {
@@ -428,10 +457,9 @@ ManyKitArduino = module.exports = function (port, options, callback) {
         return val;
     }
 
-    var recvAllStr;
-    self.manykitSerial.setFunOnData(function (data) {
-        console.log("Received data:");
-        console.log(byteToString(data));
+    self.recvAllStr = "";
+    ManyKitArduino.prototype.onRecvData = function (data) {
+        var self = this;
 
         for (var i = 0; i < data.length; i++) {
             var chara = String.fromCharCode(data[i]);
@@ -439,7 +467,7 @@ ManyKitArduino = module.exports = function (port, options, callback) {
                 continue;
             }
             else if ('\n' == chara) {
-                var str0 = byteToString(recvAllStr);
+                var str0 = byteToString(self.recvAllStr);
                 var str = str0.substr(4);
                 var cmds = str.split(" ");
 
@@ -468,7 +496,9 @@ ManyKitArduino = module.exports = function (port, options, callback) {
                 if ("200" == cmdStr) {
                     if (!self.versionReceived) {
                         self.versionReceived = true;
-                        self.ready();
+                        console.log("versionReceived!!!!!!!!!!!!!!!");
+
+                        self.onReady();
                     }
                 }
                 else if ("3" == cmdStr) { // OT_RETURN_DR
@@ -496,43 +526,24 @@ ManyKitArduino = module.exports = function (port, options, callback) {
                     self.DHTHumidity = parseFloat(paramStr1);
                 }
 
-                recvAllStr = "";
+                self.recvAllStr = "";
             }
             else {
-                recvAllStr += chara;
+                self.recvAllStr += chara;
             }
         }
-    }.bind(self));
-
-    ManyKitArduino.prototype.ready = function () {
-        // manykit
-        self.pins = [];
-        for (var i = 0; i < 30; i++) {
-            self.pins.push({
-                value: 0,
-                report: 1,
-            });
-        }
-        self.dists = [];
-        for (var i = 0; i < 8; i++) {
-            self.dists.push({
-                value: 0
-            });
-        }
-        self.irRecvValue = 0;
-        self.DHTTemperature = 0.0;
-        self.DHTHumidity = 0.0;
-
-        self.isReady = true;
-        /* istanbul ignore else */
-        if (typeof callback === "function") {
-            callback("ready", "");
-        }
     }
+    if (null != self.manykitSerial)
+        self.manykitSerial.setFunOnData(self.onRecvData.bind(self));
+    if (null != self.manykitUDP)
+        self.manykitUDP.setFunOnData(self.onRecvData.bind(self));
 
     ManyKitArduino.prototype.writeData = function (dataStr) {
         if (null != self.manykitSerial)
             self.manykitSerial.write(dataStr);
+
+        if (null != self.manykitUDP)
+            self.manykitUDP.writeUDP(self.url, self.port, dataStr);
     }
 
     ManyKitArduino.prototype.getDigitalPinValue = function (pin) {
@@ -569,6 +580,7 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // mode
     // 'INPUT', 'OUTPUT'
     ManyKitArduino.prototype.pinMode = function (pin, mode) {
+        var self = this;
         // OT_PM
         //var cntStr = "0" + "," + pin + "," + mode; 
         var cntStr = "0000" + "0" + " " + pinToArduino(pin) + " " + pinModeToArduino(mode) + "\n";
@@ -580,6 +592,7 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // val
     // "HIGH","LOW" /"high","low"
     ManyKitArduino.prototype.digitalWrite = function (pin, val) {
+        var self = this;
         // OT_DW
         //var cntStr = "1" + "," + pin + "," + val;   
         var cntStr = "0000" + "1" + " " + pinToArduino(pin) + " " + highLowToArduino(val) + "\n";
@@ -590,6 +603,7 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // '3', '5', '6', '9', '10', '11'
     // val
     ManyKitArduino.prototype.pwmWrite = function (pin, val) {
+        var self = this;
         // OT_AW
         //var cntStr = "2" + "," + pin + "," + val;
         var cntStr = "0000" + "2" + " " + pinToArduino(pin) + " " + val + "\n";
@@ -600,6 +614,7 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     // val
     ManyKitArduino.prototype.analogWrite = function (pin, val) {
+        var self = this;
         // OT_AW
         //var cntStr = "2" + "," + pin + "," + val; 
         var cntStr = "0000" + "2" + " " + pinToArduino(pin) + " " + val + "\n";
@@ -609,6 +624,7 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pin
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.digitalRead = function (pin) {
+        var self = this;
         // "OT_RETURN_DR
         //var cntStr = "3" + "," + pin;
         var cntStr = "0000" + "3" + " " + pinToArduino(pin) + "\n";
@@ -621,6 +637,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pin
     // 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.analogRead = function (pin) {
+        var self = this;
+
         // OT_RETURN_AR
         //var cntStr = "4" + "," + pin;
         var cntStr = "0000" + "4" + " " + pinToArduino(pin) + "\n";
@@ -635,6 +653,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pin
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.servoInit = function (index, pin) {
+        var self = this;
+
         // OT_SVR_I
         //var cntStr = "5" + "," + index + "," + pin;
         var cntStr = "0000" + "5" + " " + index + " " + pinToArduino(pin) + "\n";
@@ -644,6 +664,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // index
     // 0-5
     ManyKitArduino.prototype.servoWrite = function (index, val) {
+        var self = this;
+
         // OT_SVR_W
         //var cntStr = "6" + "," + index + "," + val;
         var cntStr = "0000" + "6" + " " + index + " " + val + "\n";
@@ -656,6 +678,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pin1
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.ultrasonicInit = function (pin, pin1) {
+        var self = this;
+
         // OT_DST_I
         //var cntStr = "7" + "," + pin + "," + pin1;
         var cntStr = "0000" + "7" + " " + pinToArduino(pin) + " " + pinToArduino(pin1) + "\n";
@@ -663,6 +687,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.ultrasonicTest = function () {
+        var self = this;
+
         // OT_DST_T
         //var cntStr = "8";
         var cntStr = "0000" + "8" + "\n";
@@ -670,6 +696,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.ultrasonicMeasure = function () {
+        var self = this;
+
         // OT_RETURN_DIST
         //var cntStr = "9";
         var cntStr = "0000" + "9" + "\n";
@@ -679,6 +707,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.motoInit10111213 = function () {
+        var self = this;
+
         // OT_MOTO_I
         //var cntStr = "10";
         var cntStr = "0000" + "10" + "\n";
@@ -692,6 +722,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // speed
     // 0-255
     ManyKitArduino.prototype.vehicleRun = function (index, dir, speed) {
+        var self = this;
+
         // OT_MOTO_RUN
         //var cntStr = "11" + "," + index + "," + dir + "," + speed;
         var cntStr = "0000" + "11" + " " + index + " " + dirToArduino(dir) + " " + speed + "\n";
@@ -703,6 +735,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // speed
     // 0-255
     ManyKitArduino.prototype.vehicleSimpleRun = function (dir, speed) {
+        var self = this;
+
         // OT_MOTO_RUNSIMPLE
         //var cntStr = "12" + "," + dir + "," + speed;
         var cntStr = "0000" + "12" + " " + dirToArduinoSimple(dir) + " " + speed + "\n";
@@ -710,6 +744,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.vehicleStop = function () {
+        var self = this;
+
         // OT_MOTO_STOP
         //var cntStr = "13";
         var cntStr = "0000" + "13" + "\n";
@@ -725,6 +761,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pinRB
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.vehicleSpeedEncorderInit = function (pinLA, pinLB, pinRA, pinRB) {
+        var self = this;
+
         // OT_MOTO_I_SPD
         //var cntStr = "14" + "," + pinLA + "," + pinLB + "," + pinRA + "," + pinRB;
         var cntStr = "0000" + "14" + " " + pinToArduino(pinLA) + " " + pinToArduino(pinLB) + " " + pinToArduino(pinRA) + " " + pinToArduino(pinRB) + "\n";
@@ -734,6 +772,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // index
     // 0-1
     ManyKitArduino.prototype.vehicleGetSpeed = function (index) {
+        var self = this;
+
         // OT_RETURN_MOTOSPD
         //var cntStr = "15" + "," + index;
         var cntStr = "0000" + "15" + " " + index + "\n";
@@ -742,6 +782,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.motoInit4567 = function () {
+        var self = this;
+
         // OT_MOTO_I_DRIVER4567
         //var cntStr = "16";
         var cntStr = "0000" + "16" + "\n";
@@ -761,6 +803,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pinRS
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.vehicleInit_MotoBoard298N = function (pinL0, pinL1, pinLS, pinR0, pinR1, pinRS) {
+        var self = this;
+
         // OT_MOTO_I_DRIVER298N
         //var cntStr = "17" + "," + pinL0 + "," + pinL1 + "," + pinLS + "," + pinR0 + "," + pinR1 + "," + pinRS;
         var cntStr = "0000" + "17" + " " + pinToArduino(pinL0)
@@ -777,6 +821,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pinData
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.segmentInit = function (pinCLK, pinData) {
+        var self = this;
+
         // OT_SEGMENT_INIT
         //var cntStr = "43" + "," + pinCLK + "," + pinData;
         var cntStr = "0000" + "43" + " " + pinToArduino(pinCLK) + " " + pinToArduino(pinData) + "\n";
@@ -784,6 +830,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.segmentSetBrightness = function (val) {
+        var self = this;
+
         // OT_SEGMENT_BRIGHTNESS
         //var cntStr = "44" + "," + val;
         var cntStr = "0000" + "44" + " " + val + "\n";
@@ -791,6 +839,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.segmentClear = function () {
+        var self = this;
+
         // OT_SEGMENT_CLEAR
         //var cntStr = "45";
         var cntStr = "0000" + "45" + "\n";
@@ -798,6 +848,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.segmentDisplayInt = function (val) {
+        var self = this;
+
         // OT_SEGMENT_DISPLAY
         //var cntStr = "46" + "," + "1" + "," + val;
         var cntStr = "0000" + "46" + " " + 1 + " " + val + "\n";
@@ -805,6 +857,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.segmentDisplayFloat = function (val) {
+        var self = this;
+
         // OT_SEGMENT_DISPLAY
         //var cntStr = "46" + "," + "2" + "," + val;
         var cntStr = "0000" + "46" + " " + "2" + " " + val + "\n";
@@ -816,6 +870,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pinT
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.MP3Init = function (pinR, pinT) {
+        var self = this;
+
         // OT_MP3_INIT
         //var cntStr = "18" + "," + pinR + "," + pinT;
         var cntStr = "0000" + "18" + " " + pinToArduino(pinT) + " " + pinToArduino(pinR) + "\n";
@@ -825,6 +881,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // type
     // 'play','pause','stop','next','before','random','loop_single','loop_single_close','loop_all','loop_all_close','volume_increase','volume_decrease'
     ManyKitArduino.prototype.MP3DO = function (type) {
+        var self = this;
+
         // OT_MP3_DO
         //var cntStr = "19" + "," + type;
         var cntStr = "0000" + "19" + " " + mp3DoTypeToArduino(type) + "\n";
@@ -836,6 +894,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // param1
     // 1 2 3 4 5 6 7 8...
     ManyKitArduino.prototype.MP3Play = function (param0, param1) {
+        var self = this;
+
         // OT_MP3_PLAYFOLDER
         //var cntStr = "20" + "," + param0 + "," + param1;
         var cntStr = "0000" + "20" + " " + mp3FolderToArduino(param0) + " " + param1 + "\n";
@@ -845,6 +905,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // param0
     // 0-30
     ManyKitArduino.prototype.MP3SetVolume = function (param0) {
+        var self = this;
+
         // OT_MP3_SETVOLUME
         //var cntStr = "21" + "," + param0;
         var cntStr = "0000" + "21" + " " + param0 + "\n";
@@ -854,6 +916,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pinR
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.IRInit = function (pinR) {
+        var self = this;
+
         // OT_MP3_VOLUME
         //var cntStr = "24" + "," + pinR;
         var cntStr = "0000" + "24" + " " + pinToArduino(pinR) + "\n";
@@ -861,6 +925,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.IRSendfunction = function (val) {
+        var self = this;
+
         // OT_IR_INIT
         //var cntStr = "25" + "," + val;
         var cntStr = "0000" + "25" + " " + val + "\n";
@@ -868,6 +934,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.IRReceivedValue = function () {
+        var self = this;
+
         // OT_RETURN_IR
         //var cntStr = "26";
         var cntStr = "0000" + "26" + "\n";
@@ -879,6 +947,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pin
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.DHTInit = function (pin) {
+        var self = this;
+
         // OT_DHT_I
         //var cntStr = "38" + "," + pin;
         var cntStr = "0000" + "38" + " " + pinToArduino(pin) + "\n";
@@ -890,13 +960,15 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.GetHumidity = function () {
-        return sprite.arduino.board.getDHTHumidity();
+        return self.getDHTHumidity();
     }
 
     // rc init
     // pin
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.RCInit = function (pin) {
+        var self = this;
+
         // OT_RC_INIT
         //var cntStr = "35" + "," + pin;
         var cntStr = "0000" + "35" + " " + pinToArduino(pin) + "\n";
@@ -904,6 +976,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.RCSend = function (val) {
+        var self = this;
+
         // OT_RC_SEND
         //var cntStr = "36" + "," + val;
         var cntStr = "0000" + "36" + " " + val + "\n";
@@ -913,6 +987,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pin
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.RGBLEDInit = function (pin, num) {
+        var self = this;
+
         // OT_LEDSTRIP_I
         //var cntStr = "41" + "," + pin + "," + num;
         var cntStr = "0000" + "41" + " " + pinToArduino(pin) + " " + num + "\n";
@@ -924,6 +1000,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // r g b
     // 0-255
     ManyKitArduino.prototype.RGBLEDSetColor = function (index, r, g, b) {
+        var self = this;
+
         // OT_LEDSTROP_SET
         //var cntStr = "42" + "," + index + "," + r + "," + g + "," + b;
         var cntStr = "0000" + "42" + " " + index + " " + r + " " + g + " " + b + "\n";
@@ -935,6 +1013,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pinData
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.LEDMatrixInit = function (pinClk, pinData) {
+        var self = this;
+
         // OT_LEDMATRIX_I
         //var cntStr = "47" + "," + pinCLK + "," + pinData;
         var cntStr = "0000" + "47" + " " + pinToArduino(pinClk) + " " + pinToArduino(pinData) + "\n";
@@ -943,6 +1023,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
 
     // val
     ManyKitArduino.prototype.LEDMatrixSetBrightness = function (val) {
+        var self = this;
+
         // OT_LEDMATRIX_BRIGHTNESS
         //var cntStr = "48" + "," + val;
         var cntStr = "0000" + "48" + " " + val + "\n";
@@ -950,6 +1032,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.LEDMatrixClearScreen = function () {
+        var self = this;
+
         // OT_LEDMATRIX_CLEARSCREEN
         //var cntStr = "49";
         var cntStr = "0000" + "49" + "\n";
@@ -959,6 +1043,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // onoff
     // true false
     ManyKitArduino.prototype.LEDMatrixLightAt = function (x, y, width, onOff) {
+        var self = this;
+
         // OT_LEDMATRIX_LIGHTAT
         //var cntStr = "50" + "," + x + "," + y + "," + width + "," + onOff;
         var cntStr = "0000" + "50" + " " + x + " " + y + " " + width + " " + boolToArduino(onOff) + "\n";
@@ -975,6 +1061,8 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     // pinEnable
     // '0','1','2','3', '4', '5', '6', '7', '8' '9' '10', '10', '11', '12', '13' 'A0', 'A1', 'A2', 'A3', 'A4', 'A5'
     ManyKitArduino.prototype.StepMotoInit = function (index, pinVCC, pincPLS, pinDir, pinEnable) {
+        var self = this;
+        
         // OT_STEPMOTO_I
         //var cntStr = "51" + "," + index + "," + pinVCC + "," + pincPLS + "," + pinDir + "," + pinEnable;
         var cntStr = "0000" + "51" + " " + index + " " + pinToArduino(pinVCC) + " " + pinToArduino(pincPLS) + " " + pinToArduino(pinDir) + " " + pinToArduino(pinEnable) + "\n";
@@ -982,23 +1070,35 @@ ManyKitArduino = module.exports = function (port, options, callback) {
     }
 
     ManyKitArduino.prototype.StepMotoEnable = function (index, enable) {
+        var self = this;
+        
         // OT_STEPMOTO_ENABLE
         //var cntStr = "52" + "," + index + "," + enable;
-        var cntStr = "0000" + "52" + " " + index + " " + boolToArduino(enable) + "\n";;
+        var cntStr = "0000" + "52" + " " + index + " " + boolToArduino(enable) + "\n";
         self.writeData(cntStr);
     }
 
     ManyKitArduino.prototype.StepMotoDir = function (index, forward) {
+        var self = this;
+        
         // OT_STEPMOTO_DIR
         //var cntStr = "53" + "," + index + "," + forward;
-        var cntStr = "0000" + "53" + " " + index + " " + boolToArduino(forward) + "\n";;
+        var cntStr = "0000" + "53" + " " + index + " " + boolToArduino(forward) + "\n";
         self.writeData(cntStr);
     }
 
     ManyKitArduino.prototype.StepMotoStep = function (index, delay) {
+        var self = this;
+
         // OT_STEPMOTO_STEP
         //var cntStr = "54" + "," + index + "," + delay;
-        var cntStr = "0000" + "54" + " " + index + " " + delay + "\n";;
+        var cntStr = "0000" + "54" + " " + index + " " + delay + "\n";
         self.writeData(cntStr);
+    }
+
+    if ("" == self.url) {
+    }
+    else {
+        self.pinMode("5", "OUTPUT"); // send this to give udp ip & port to esp; important!!!
     }
 }
