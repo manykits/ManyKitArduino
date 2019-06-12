@@ -222,6 +222,7 @@ void _ESPTimerAfter()
 
   mk.mWiFiUDP.begin(mk.mESPUDPPort);
 
+  Serial.println("ESP inited!");
   mk.mIsESPInited = true;
 }
 #endif
@@ -570,7 +571,6 @@ void MK_Arduino::Tick()
         mIncomingPacket[len] = 0;
         String strIncoming(mIncomingPacket);
         String cmdStr = strIncoming.substring(4, strIncoming.length()-1);
-        Serial.println(cmdStr);
         mk.OnCMD(mCmdParams, cmdStr);
       }
     }
