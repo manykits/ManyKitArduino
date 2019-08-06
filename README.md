@@ -2,54 +2,54 @@
 javascript manykit arduino firewall communicate
 # sample:
 
-var ManyKitArduino = require("./ManyKitArduinoJS/manykitarduino");
+  var ManyKitArduino = require("./ManyKitArduinoJS/manykitarduino");
 
-// serial mode
+  // serial mode
 
-var mkArduino = new ManyKitArduino("", "COM3");
+  var mkArduino = new ManyKitArduino("", "COM3");
 
-// udp mode
+  // udp mode
 
-var mkArduino = new ManyKitArduino("192.168.6.66", 2334);
-mkArduino.sayHelloToTellAddress();
+  var mkArduino = new ManyKitArduino("192.168.6.66", 2334);
+  mkArduino.sayHelloToTellAddress();
 
-// pinMode
+  // pinMode
 
-mkArduino.pinMode("13", "OUTPUT");
+  mkArduino.pinMode("13", "OUTPUT");
 
-var isHigh = false;
+  var isHigh = false;
 
-// tick
+  // tick
 
-function myFunc() {
+  function myFunc() {
 
-  var isReady = mkArduino.isBoardReady();
-  
-  if (isReady) {
-  
-    var val = mkArduino.digitalRead("13");
-
-    if (!isHigh) {
+    var isReady = mkArduino.isBoardReady();
     
-      console.log("high");
-      
-      mkArduino.digitalWrite("13", "high");
-      
-      isHigh = true;
-      
-    }
+    if (isReady) {
     
-    else {
-    
-      console.log("low");
+      var val = mkArduino.digitalRead("13");
+
+      if (!isHigh) {
       
-      mkArduino.digitalWrite("13", "low");
+        console.log("high");
+        
+        mkArduino.digitalWrite("13", "high");
+        
+        isHigh = true;
+        
+      }
       
-      isHigh = false; 
+      else {
+      
+        console.log("low");
+        
+        mkArduino.digitalWrite("13", "low");
+        
+        isHigh = false; 
+      }
+      
     }
     
   }
-  
-}
 
-setInterval(myFunc, 1000);
+  setInterval(myFunc, 1000);
