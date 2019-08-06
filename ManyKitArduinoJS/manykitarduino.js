@@ -463,6 +463,7 @@ ManyKitArduino = module.exports = function (url, port, options, callback) {
 
         for (var i = 0; i < data.length; i++) {
             var chara = String.fromCharCode(data[i]);
+
             if ('\r' == chara) {
                 continue;
             }
@@ -1096,9 +1097,10 @@ ManyKitArduino = module.exports = function (url, port, options, callback) {
         self.writeData(cntStr);
     }
 
-    if ("" == self.url) {
-    }
-    else {
+    ManyKitArduino.prototype.sayHelloToTellAddress = function () {
+        var self = this;
+
         self.pinMode("5", "OUTPUT"); // send this to give udp ip & port to esp; important!!!
     }
+
 }
