@@ -5,18 +5,22 @@ javascript manykit arduino firewall communicate
 var ManyKitArduino = require("./ManyKitArduinoJS/manykitarduino");
 
 // serial mode
+
 var mkArduino = new ManyKitArduino("", "COM3");
 
 // udp mode
+
 var mkArduino = new ManyKitArduino("192.168.6.66", 2334);
 mkArduino.sayHelloToTellAddress();
 
 // pinMode
+
 mkArduino.pinMode("13", "OUTPUT");
 
 var isHigh = false;
 
 // tick
+
 function myFunc() {
 
   var isReady = mkArduino.isBoardReady();
