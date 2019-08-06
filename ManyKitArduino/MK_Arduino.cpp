@@ -31,7 +31,8 @@ char MK_Arduino::PinStr[P_MAX_TYPE] =
   33,
   34,
   35,
-  36
+  36,
+  37
 };
 //----------------------------------------------------------------------------
 unsigned char MK_Arduino::sOptTypeVal[OT_MAX_TYPE] =
@@ -112,7 +113,7 @@ MK_Arduino::MK_Arduino()
 {
   pxfarduino = this;
 
-  mNetID = 12345678;
+  mNetID = 1234;
   
   Init(false);
 }
@@ -222,7 +223,6 @@ void _ESPTimerAfter()
 
   mk.mWiFiUDP.begin(mk.mESPUDPPort);
 
-  Serial.println("ESP inited!");
   mk.mIsESPInited = true;
 }
 #endif
@@ -571,6 +571,7 @@ void MK_Arduino::Tick()
         mIncomingPacket[len] = 0;
         String strIncoming(mIncomingPacket);
         String cmdStr = strIncoming.substring(4, strIncoming.length()-1);
+        Serial.println(cmdStr);
         mk.OnCMD(mCmdParams, cmdStr);
       }
     }

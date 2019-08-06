@@ -1,0 +1,41 @@
+﻿<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MANYKIT ESP Serial</title>
+  </head>
+  <body>
+    <h3>MANYKIT ESP Serial</h3>
+    MANYKIT ESP Serial
+	<h3>RECEIVE</h3>
+	<h3 id="receive">empty</h3>
+	<h3>SEND</h3>
+	<h3 id="send">empty</h3>
+    <script>
+		function fun(){
+			var request = new XMLHttpRequest();
+			request.open('get', '/receive');
+			request.send();
+			request.onreadystatechange = function () {
+				if (request.readyState == 4 && request.status == 200) {
+					console.log(request.responseText);
+					var tag = document.getElementById("receive");
+					tag.innerText = request.responseText;
+				}
+			}
+			var requestsend = new XMLHttpRequest();
+			requestsend.open('get', '/send');
+			requestsend.send();
+			requestsend.onreadystatechange = function () {
+				if (requestsend.readyState == 4 && requestsend.status == 200) {
+					console.log(requestsend.responseText);
+					var tag = document.getElementById("send");
+					tag.innerText = requestsend.responseText;
+				}
+			}
+        }
+        setInterval("fun()",100);
+    </script>
+  </body>
+</html>

@@ -136,6 +136,7 @@ enum MK_Pin
     P_A4,
     P_A5,
     P_A6,
+    P_A7,
     P_MAX_TYPE
 };
 #define MK_A0 30
@@ -280,7 +281,6 @@ public:
   String RecvStr;
 
   // cmds process
-  void OnCMDGroup(String &cmdStr);
   void OnCMD(String *cmdParams, String &cmdStr);
 
 #if defined MK_DHT
@@ -323,8 +323,6 @@ public:
   String F2Str(float val);
   int _Str2IO(String &str);
   int _Str2Pin(String &str);
-  MK_Pin _Str2MK_Pin(String &str);
-  int MK_Pin2Pin(MK_Pin pxfPin);
   bool _Str2Bool(String &str);
   int _Str2Int(String &str);
   float _Str2Float(String &str);

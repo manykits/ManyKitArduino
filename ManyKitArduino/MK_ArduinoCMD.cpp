@@ -38,7 +38,6 @@ void MK_Arduino::OnCMD(String *cmdParams, String &cmdStr)
     {
       int pin = _Str2Pin(cmdParams[1]);
       int val = _Str2IO(cmdParams[2]);
-      int i = _Str2MK_Pin(cmdParams[1]);
       pinMode(pin, val);
     }
     else if(sOptTypeVal[OT_DW]==cmdCH)
@@ -534,27 +533,6 @@ int MK_Arduino::_Str2Pin(String &str)
     return (pinVal - MK_A0) + A0;
 
   return 0;
-}
-//----------------------------------------------------------------------------
-int MK_Arduino::MK_Pin2Pin(MK_Pin pxfPin)
-{
-  if (P_0 <= pxfPin && pxfPin <= P_13)
-    return pxfPin;
-  else if (P_A0 <= pxfPin && pxfPin <= P_A6)
-    return (pxfPin - P_A0) + A0;
-
-  return 0;
-}
-//----------------------------------------------------------------------------
-MK_Pin MK_Arduino::_Str2MK_Pin(String &str)
-{
-  int pinVal = atoi(str.c_str());
-  if (0 <= pinVal && pinVal <= P_13)
-    return (MK_Pin)(P_0 + pinVal);
-  else if (MK_A0 <= pinVal)
-    return (MK_Pin)((pinVal - MK_A0) + P_A0);
-    
-  return P_0;
 }
 //----------------------------------------------------------------------------
 bool MK_Arduino::_Str2Bool(String &str)
