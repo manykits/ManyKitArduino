@@ -32,8 +32,24 @@ char incomingPacket[537];         // udp receive buffer
 Timer mTimer;
 int mSendEventID = 0;
 
-IPAddress remoteIP;
-uint16_t remotePort = 0; 
+struct RMOBJ {
+  IPAddress remoteIP;
+  uint16_t remotePort;
+};
+#define NumMaxRMOBJ 6
+RMOBJ rmobjs[NumMaxRMOBJ];
+int numrmObjs = 0;
+
+bool isHasRMObj(IPAddress adr, uint16_t port){
+    int i=0;
+    for (; i<numrmObjs; i++){
+      if (rmobjs[i].remoteIP == adr && rmobjs[i].remotePort == port) {
+        return true;  
+      }
+    }
+
+    return false;
+}
 
 ESP8266WebServer server(80);
 
@@ -41,7 +57,7 @@ String _GetContentType(String filename)
 {
   if (server.hasArg("download"))
     return "application/octet-stream";
-    
+
   else if (filename.endsWith(".htm"))
     return "text/html";
   else if (filename.endsWith(".html"))
@@ -86,66 +102,66 @@ bool _HandleFileRead(String path)
 
 bool autoConfig()
 {
-    WiFi.mode(WIFI_STA);
-    WiFi.begin();
-    for (int i = 0; i < 20; i++)
-    {     
-        pinMode(0, INPUT);
-        int val = digitalRead(0);
-        if (0 == val)
-        {   
-          Serial.println("mk eraseconfig_begin"); 
-          WiFi.disconnect();
-          delay(2000);
-          ESP.restart();
-          Serial.println("mk eraseconfig_done");
-        }             
-        int wstatus = WiFi.status();
-        if (wstatus == WL_CONNECTED)
-        {
-            Serial.println("mk autoconfig_success");
-            Serial.printf("mk ssid:%s\r\n", WiFi.SSID().c_str());
-            Serial.printf("mk psw:%s\r\n", WiFi.psk().c_str());
-            WiFi.printDiag(Serial);
-            return true;
-        }
-        else
-        {
-            Serial.print("mk autoconfig_waiting");
-            Serial.println(wstatus);
-            delay(500);
-        }
+  WiFi.mode(WIFI_STA);
+  WiFi.begin();
+  for (int i = 0; i < 20; i++)
+  {
+    pinMode(0, INPUT);
+    int val = digitalRead(0);
+    if (0 == val)
+    {
+      Serial.println("mk eraseconfig_begin");
+      WiFi.disconnect();
+      delay(2000);
+      ESP.restart();
+      Serial.println("mk eraseconfig_done");
     }
-    Serial.println("mk autoconfig_faild");
-    return false;
+    int wstatus = WiFi.status();
+    if (wstatus == WL_CONNECTED)
+    {
+      Serial.println("mk autoconfig_success");
+      Serial.printf("mk ssid:%s\r\n", WiFi.SSID().c_str());
+      Serial.printf("mk psw:%s\r\n", WiFi.psk().c_str());
+      WiFi.printDiag(Serial);
+      return true;
+    }
+    else
+    {
+      Serial.print("mk autoconfig_waiting");
+      Serial.println(wstatus);
+      delay(500);
+    }
+  }
+  Serial.println("mk autoconfig_faild");
+  return false;
 }
 
 void smartConfig()
 {
-    Serial.println("mk wait_for_smartconfig");
-    WiFi.beginSmartConfig();
-    bool isSmartDone = WiFi.smartConfigDone(); 
-    while (!isSmartDone)
+  Serial.println("mk wait_for_smartconfig");
+  WiFi.beginSmartConfig();
+  bool isSmartDone = WiFi.smartConfigDone();
+  while (!isSmartDone)
+  {
+    Serial.print(".");
+    isSmartDone = WiFi.smartConfigDone();
+
+    if (isSmartDone)
     {
-        Serial.print(".");      
-       isSmartDone = WiFi.smartConfigDone();
-        
-        if (isSmartDone)
-        {
-            Serial.println("mk smartconfig_success!");
-            Serial.printf("ssid:%s\r\n", WiFi.SSID().c_str());
-            Serial.printf("psw:%s\r\n", WiFi.psk().c_str());
-            WiFi.setAutoConnect(true);
-        }
-        delay(1500);
+      Serial.println("mk smartconfig_success!");
+      Serial.printf("ssid:%s\r\n", WiFi.SSID().c_str());
+      Serial.printf("psw:%s\r\n", WiFi.psk().c_str());
+      WiFi.setAutoConnect(true);
     }
+    delay(1500);
+  }
 }
 
 char string[32];
 bool isInited = false;
 
 void timerAfter()
-{  
+{
   IPAddress ip = WiFi.localIP();
   IPAddress ipzero;
   ipzero.fromString("0.0.0.0");
@@ -156,61 +172,62 @@ void timerAfter()
     Serial.println(ip);
     delay(500);
   }
-  
+
   // file system
   SPIFFS.begin();
-  
-  if (!MDNS.begin(host, ip)) 
+
+  if (!MDNS.begin(host, ip))
   {
     Serial.println("mk error_setting_up_MDNS_responder");
-    while(1) 
-    { 
+    while (1)
+    {
       delay(1000);
     }
   }
   Serial.println("mk mDNS_responder_started");
 
   server.on ("/version", []() {
-     server.send(200, "text/plain", "1.0.0");
+    server.send(200, "text/plain", "1.0.0");
   });
-  
+
   server.on ("/receive", []() {
-     server.send(200, "text/plain", receiveStr);
+    server.send(200, "text/plain", receiveStr);
   });
 
   server.on ("/send", []() {
-     server.send(200, "text/plain", sendStr);
+    server.send(200, "text/plain", sendStr);
   });
-  
-  server.onNotFound([](){
-    if(!_HandleFileRead(server.uri()))
+
+  server.onNotFound([]() {
+    if (!_HandleFileRead(server.uri()))
       server.send(404, "text/plain", "FileNotFound");
   });
-  
+
   server.begin();
   Serial.println("mk http_server_started");
   String ipStr = ip.toString();
   Serial.println("mk ip:" + ipStr);
-  MDNS.setInstanceName("manykitespserial:"+ipStr);
+  MDNS.setInstanceName("manykitespserial:" + ipStr);
   MDNS.addService("http", "tcp", 80);
- 
+
   Udp.begin(localUdpPort);
 
   isInited = true;
 }
 
-void setup() { 
+void setup() {
   Serial.begin(9600);
+  numrmObjs = 0;
 
- #if defined SMART_CONFIG
+#if defined SMART_CONFIG
   if (!autoConfig())
   {
     Serial.println("mk start_module");
     smartConfig();
   }
- #else
+#else
   WiFi.mode(WIFI_STA);
-  IPAddress ip(192, 168, IP0, IP1); 
+  IPAddress ip(192, 168, IP0, IP1);
   IPAddress gateway(192, 168, IP0, 1);
   Serial.print("mk setting_static_ip_to:");
   Serial.println(ip);
@@ -222,53 +239,112 @@ void setup() {
     Serial.print(".");
   }
 #endif
-  
+
   isInited = false;
   mTimer.after(1000, timerAfter);
 }
 
+#define NumCMDParams 7
+String CmdParams[NumCMDParams];
+
 void loop() {
   mTimer.update();
-  
+
   if (!isInited)
     return;
 
-  while (Serial.available()){
+  while (Serial.available()) {
     char c = Serial.read();
     if ('\n' == c)
     {
+      serialReceiveStr += '\n';
       if (serialReceiveStr.length() > 0)
       {
         sendStr = serialReceiveStr;
-                
-        Udp.beginPacket(remoteIP, remotePort);
-        Udp.write(serialReceiveStr.c_str(), serialReceiveStr.length()); 
-        Udp.endPacket();
+
+        int iRMOBJ = 0;
+        for (iRMOBJ=0; iRMOBJ<numrmObjs; iRMOBJ++){
+           RMOBJ obj = rmobjs[iRMOBJ];
+           Udp.beginPacket(obj.remoteIP, obj.remotePort);
+           Udp.write(serialReceiveStr.c_str(), serialReceiveStr.length());
+           Udp.endPacket();
+        }
       }
       serialReceiveStr = "";
+    }
+    else if ('\r' == c)
+    {
+      /*_*/
     }
     else
     {
       serialReceiveStr += c;
     }
   }
-  
+
   server.handleClient();
- 
+
   int packetSize = Udp.parsePacket();
   if (packetSize)
   {
-    remoteIP =  Udp.remoteIP();
-    remotePort = Udp.remotePort();
+    RMOBJ obj;
+    obj.remoteIP =  Udp.remoteIP();
+    obj.remotePort = Udp.remotePort();
+    if (!isHasRMObj( obj.remoteIP, obj.remotePort) &&
+        numrmObjs<NumMaxRMOBJ-1){
+       rmobjs[numrmObjs] = obj;
+       numrmObjs++; 
+    }
 
     int len = Udp.read(incomingPacket, 536);
     if (len > 0)
     {
       incomingPacket[len] = 0;
-      
+
       receiveStr = String(incomingPacket);
-      
-      Serial.write(incomingPacket, len);
+
+      int i=0;
+      for (i; i<NumCMDParams; i++)
+      {
+        CmdParams[i] = "";
+      }
+      String strs = receiveStr;    
+      int cmdIndexTemp = 0;
+      char *pCMDParam = strtok((char *)strs.c_str(), " ");
+      while (pCMDParam)
+      {
+        CmdParams[cmdIndexTemp] = String(pCMDParam);
+        cmdIndexTemp++;
+        pCMDParam = strtok(NULL, " ");
+    
+        if (cmdIndexTemp > NumCMDParams)
+          break;
+      }
+      bool isSys = false;
+      if (cmdIndexTemp > 0)
+      {
+        String cmd = CmdParams[0];
+        if (String("sys") == cmd){ 
+          isSys = true;
+        }
+      }
+
+      if (isSys){
+        String doType = CmdParams[1];
+        if (String("send") == doType){
+            String ip = CmdParams[2];
+            String portStr = CmdParams[3];
+            String valStr =  CmdParams[4];
+            uint16_t port = atoi(portStr.c_str());
+           
+            Udp.beginPacket(ip.c_str(), port);
+            Udp.write(valStr.c_str(), valStr.length());
+            Udp.endPacket();
+        }
+      }
+      else{
+          Serial.write(receiveStr.c_str(), len);
+      }
     }
   }
 }
