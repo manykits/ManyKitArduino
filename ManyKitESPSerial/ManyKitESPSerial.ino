@@ -343,7 +343,7 @@ void loop() {
         }
       }
       else{
-          Serial.write(receiveStr.c_str(), len);
+          Serial.write((const uint8_t*)receiveStr.c_str(), len);
       }
     }
   }
