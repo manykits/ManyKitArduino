@@ -12,13 +12,20 @@
 
 #if not defined SMART_CONFIG
 
-// change to your ip you wanted
+//! change to your ip you wanted
 IPAddress ip(192, 168, 6, 123);
 IPAddress gateway(192, 168, 6, 1);
 
+//! router to connect
 #define url "YaoQuanAIOT"
 #define password "12345678"
+
 #endif
+
+//! set this to make sure if need to send to the cloud
+bool isSendToCloud = true;
+IPAddress ipToSendCloud(182, 254, 213, 85);
+uint16_t portToSendCloud = 2336;
 
 const char* host = "manykit_esp_serial";
 
@@ -262,6 +269,12 @@ void loop() {
       if (serialReceiveStr.length() > 0)
       {
         sendStr = serialReceiveStr;
+
+         if (isSendToCloud){
+           Udp.beginPacket(ipToSendCloud, portToSendCloud);
+           Udp.write(serialReceiveStr.c_str(), serialReceiveStr.length());
+           Udp.endPacket();
+         }
 
         int iRMOBJ = 0;
         for (iRMOBJ=0; iRMOBJ<numrmObjs; iRMOBJ++){
