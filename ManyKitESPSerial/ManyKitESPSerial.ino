@@ -11,8 +11,11 @@
 //#define SMART_CONFIG 1
 
 #if not defined SMART_CONFIG
-#define IP0 6
-#define IP1 66
+
+// change to your ip you wanted
+IPAddress ip(192, 168, 6, 123);
+IPAddress gateway(192, 168, 6, 1);
+
 #define url "YaoQuanAIOT"
 #define password "12345678"
 #endif
@@ -227,8 +230,6 @@ void setup() {
   }
 #else
   WiFi.mode(WIFI_STA);
-  IPAddress ip(192, 168, IP0, IP1);
-  IPAddress gateway(192, 168, IP0, 1);
   Serial.print("mk setting_static_ip_to:");
   Serial.println(ip);
   IPAddress subnet(255, 255, 255, 0); // set subnet mask to match your network
@@ -302,13 +303,13 @@ void loop() {
       incomingPacket[len] = 0;
 
       receiveStr = String(incomingPacket);
-
+      String strs = receiveStr;    
+      
       int i=0;
       for (i; i<NumCMDParams; i++)
       {
         CmdParams[i] = "";
       }
-      String strs = receiveStr;    
       int cmdIndexTemp = 0;
       char *pCMDParam = strtok((char *)strs.c_str(), " ");
       while (pCMDParam)
@@ -343,7 +344,7 @@ void loop() {
         }
       }
       else{
-          Serial.write((const uint8_t*)receiveStr.c_str(), len);
+          Serial.write(receiveStr.c_str(), len);
       }
     }
   }
