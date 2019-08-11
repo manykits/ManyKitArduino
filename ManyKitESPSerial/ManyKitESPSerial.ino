@@ -26,14 +26,14 @@ IPAddress gateway(192, 168, 6, 1);
 bool isSendToCloud = true;
 IPAddress ipToSendCloud(182, 254, 213, 85);
 uint16_t portToSendCloud = 2336;
+// this's tag means me
+String tagHelloItIsMe("hello i am esp");
 
 const char* host = "manykit_esp_serial";
-
 WiFiUDP Udp;
 
 String serialReceiveStr;
-
-String receiveStr;
+String udpReceiveStr;
 String sendStr;
 
 unsigned int localUdpPort = 2334; // local udp port
@@ -201,7 +201,7 @@ void timerAfter()
   });
 
   server.on ("/receive", []() {
-    server.send(200, "text/plain", receiveStr);
+    server.send(200, "text/plain", udpReceiveStr);
   });
 
   server.on ("/send", []() {
@@ -221,6 +221,12 @@ void timerAfter()
   MDNS.addService("http", "tcp", 80);
 
   Udp.begin(localUdpPort);
+
+  if (isSendToCloud){
+     Udp.beginPacket(ipToSendCloud, portToSendCloud);
+     Udp.write(tagHelloItIsMe.c_str(), tagHelloItIsMe.length());
+     Udp.endPacket();
+  }
 
   isInited = true;
 }
@@ -277,11 +283,20 @@ void loop() {
          }
 
         int iRMOBJ = 0;
+        bool isNeedSend = false;
         for (iRMOBJ=0; iRMOBJ<numrmObjs; iRMOBJ++){
            RMOBJ obj = rmobjs[iRMOBJ];
-           Udp.beginPacket(obj.remoteIP, obj.remotePort);
-           Udp.write(serialReceiveStr.c_str(), serialReceiveStr.length());
-           Udp.endPacket();
+           // to cloud only need send once
+           isNeedSend = true;     
+           if (isSendToCloud && obj.remoteIP == ipToSendCloud && obj.remotePort == portToSendCloud){
+            isNeedSend = false;
+           }
+           if (isNeedSend)
+           {
+             Udp.beginPacket(obj.remoteIP, obj.remotePort);
+             Udp.write(serialReceiveStr.c_str(), serialReceiveStr.length());
+             Udp.endPacket();
+           }
         }
       }
       serialReceiveStr = "";
@@ -315,8 +330,8 @@ void loop() {
     {
       incomingPacket[len] = 0;
 
-      receiveStr = String(incomingPacket);
-      String strs = receiveStr;    
+      udpReceiveStr = String(incomingPacket);
+      String strs = udpReceiveStr;    
       
       int i=0;
       for (i; i<NumCMDParams; i++)
@@ -357,7 +372,7 @@ void loop() {
         }
       }
       else{
-          Serial.write(receiveStr.c_str(), len);
+          Serial.write(udpReceiveStr.c_str(), len);
       }
     }
   }
