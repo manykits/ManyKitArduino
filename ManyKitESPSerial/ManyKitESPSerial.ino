@@ -23,9 +23,9 @@ IPAddress gateway(192, 168, 6, 1);
 #endif
 
 //! set this to make sure if need to send to the cloud
-bool isSendToCloud = true;
-IPAddress ipToSendCloud(182, 254, 213, 85);
-uint16_t portToSendCloud = 2336;
+bool isSendToAServer = true;
+IPAddress ipToSendToAServer(182, 254, 213, 85);
+uint16_t portToSendToAServer = 2336;
 // this's tag means me
 String tagHelloItIsMe("hello i am esp");
 
@@ -34,7 +34,7 @@ WiFiUDP Udp;
 
 String serialReceiveStr;
 String udpReceiveStr;
-String sendStr;
+String udpSendStr;
 
 unsigned int localUdpPort = 2334; // local udp port
 char incomingPacket[537];         // udp receive buffer
@@ -205,7 +205,7 @@ void timerAfter()
   });
 
   server.on ("/send", []() {
-    server.send(200, "text/plain", sendStr);
+    server.send(200, "text/plain", udpSendStr);
   });
 
   server.onNotFound([]() {
@@ -222,8 +222,8 @@ void timerAfter()
 
   Udp.begin(localUdpPort);
 
-  if (isSendToCloud){
-     Udp.beginPacket(ipToSendCloud, portToSendCloud);
+  if (isSendToAServer){
+     Udp.beginPacket(ipToSendToAServer, portToSendToAServer);
      Udp.write(tagHelloItIsMe.c_str(), tagHelloItIsMe.length());
      Udp.endPacket();
   }
@@ -274,29 +274,69 @@ void loop() {
       serialReceiveStr += '\n';
       if (serialReceiveStr.length() > 0)
       {
-        sendStr = serialReceiveStr;
+        udpSendStr = serialReceiveStr;
+        String strs = serialReceiveStr;
 
-         if (isSendToCloud){
-           Udp.beginPacket(ipToSendCloud, portToSendCloud);
-           Udp.write(serialReceiveStr.c_str(), serialReceiveStr.length());
-           Udp.endPacket();
-         }
+        int i=0;
+        for (i; i<NumCMDParams; i++)
+        {
+          CmdParams[i] = "";
+        }
+        int cmdIndexTemp = 0;
+        char *pCMDParam = strtok((char *)strs.c_str(), " ");
+        while (pCMDParam)
+        {
+          CmdParams[cmdIndexTemp] = String(pCMDParam);
+          cmdIndexTemp++;
+          pCMDParam = strtok(NULL, " ");
+      
+          if (cmdIndexTemp > NumCMDParams)
+            break;
+        }
+        bool isSys = false;
+        if (cmdIndexTemp > 0)
+        {
+          String cmd = CmdParams[0];
+          if (String("sys") == cmd){ 
+            isSys = true;
+          }
+        }
 
-        int iRMOBJ = 0;
-        bool isNeedSend = false;
-        for (iRMOBJ=0; iRMOBJ<numrmObjs; iRMOBJ++){
-           RMOBJ obj = rmobjs[iRMOBJ];
-           // to cloud only need send once
-           isNeedSend = true;     
-           if (isSendToCloud && obj.remoteIP == ipToSendCloud && obj.remotePort == portToSendCloud){
-            isNeedSend = false;
-           }
-           if (isNeedSend)
-           {
-             Udp.beginPacket(obj.remoteIP, obj.remotePort);
+        if (isSys)
+        {
+          String doType = CmdParams[1];
+          if (String("setip") == doType){
+              String ip = CmdParams[2];
+              String portStr = CmdParams[3];
+              uint16_t port = atoi(portStr.c_str());
+              ipToSendToAServer = IPAddress((const uint8_t *)ip.c_str());
+              portToSendToAServer = port;
+          }
+        }
+        else
+        {
+          if (isSendToAServer){
+             Udp.beginPacket(ipToSendToAServer, portToSendToAServer);
              Udp.write(serialReceiveStr.c_str(), serialReceiveStr.length());
              Udp.endPacket();
            }
+
+          int iRMOBJ = 0;
+          bool isNeedSend = false;
+          for (iRMOBJ=0; iRMOBJ<numrmObjs; iRMOBJ++){
+             RMOBJ obj = rmobjs[iRMOBJ];
+             // to cloud only need send once
+             isNeedSend = true;     
+             if (isSendToAServer && obj.remoteIP == ipToSendToAServer && obj.remotePort == portToSendToAServer){
+              isNeedSend = false;
+             }
+             if (isNeedSend)
+             {
+               Udp.beginPacket(obj.remoteIP, obj.remotePort);
+               Udp.write(serialReceiveStr.c_str(), serialReceiveStr.length());
+               Udp.endPacket();
+             }
+          } 
         }
       }
       serialReceiveStr = "";
@@ -366,7 +406,7 @@ void loop() {
             String valStr =  CmdParams[4];
             uint16_t port = atoi(portStr.c_str());
            
-            Udp.beginPacket(ip.c_str(), port);
+            Udp.beginPacket((const uint8_t *)ip.c_str(), port);
             Udp.write(valStr.c_str(), valStr.length());
             Udp.endPacket();
         }
