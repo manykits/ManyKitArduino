@@ -513,7 +513,15 @@ void MK_Arduino::OnCMD(String *cmdParams, String &cmdStr)
 #endif
     }
     else if (sOptTypeVal[OT_MKSERIAL_SEND] == cmdCH){
-      MKSerialReceivedString = cmdParams[1];
+
+      String str;
+      int i=1;
+      for (; i<cmdIndexTemp; i++)
+      {
+        str += (" " + cmdParams[i]);
+      }
+      
+      MKSerialReceivedString = str;
       
       unsigned char cmdCh = sOptTypeVal[OT_RETURN_MKSERIAL];
       char strCMDCh[32];
