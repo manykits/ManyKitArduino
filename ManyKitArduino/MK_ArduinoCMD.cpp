@@ -512,6 +512,22 @@ void MK_Arduino::OnCMD(String *cmdParams, String &cmdStr)
       LCI2C_PrintByte(val);
 #endif
     }
+    else if (sOptTypeVal[OT_MKSERIAL_SEND] == cmdCH){
+      MKSerialReceivedString = cmdParams[1];
+      
+      unsigned char cmdCh = sOptTypeVal[OT_RETURN_MKSERIAL];
+      char strCMDCh[32];
+      memset(strCMDCh, 0, 32);
+      itoa(cmdCh, strCMDCh, 10);
+        
+      Serial.print("0000");
+      Serial.print(String(strCMDCh)); 
+      Serial.print(" ");
+      Serial.println(MKSerialReceivedString);
+    }
+    else if (sOptTypeVal[OT_MKSERIAL_SEND] == cmdCH){
+      ClearMKSerialReceivedString();
+    }
   }
 }
 //----------------------------------------------------------------------------

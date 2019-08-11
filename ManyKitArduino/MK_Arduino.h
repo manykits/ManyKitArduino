@@ -239,6 +239,9 @@ enum OptionType
   OT_LCI2C_SETBACKLIGHT,
   OT_LCI2C_PRINT,
   OT_LCI2C_PRINTBYTE,
+  OT_MKSERIAL_SEND,
+  OT_RETURN_MKSERIAL,
+  OT_MKSERAL_CLEAR,
   OT_MC_INTERNAL_LIGHT, // makerclock
   OT_MC_LIGHT,
   OT_MC_SEGMENT,
@@ -542,6 +545,15 @@ public:
 
   LiquidCrystal_I2C *mLiquidCrystal_I2C;
 #endif
+
+  void SerialPrintln(String str);
+  void ClearSerialReceived();
+  String GetSerialReceived();
+  
+  void MKSerialSend(String str);
+  String GetMKSerialReceivedString();
+  void ClearMKSerialReceivedString(); 
+  String MKSerialReceivedString;
 
 #if defined MK_ESP_NETWORK
   bool AutoConfig();

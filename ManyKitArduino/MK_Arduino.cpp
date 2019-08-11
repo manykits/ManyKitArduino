@@ -98,6 +98,9 @@ unsigned char MK_Arduino::sOptTypeVal[OT_MAX_TYPE] =
         58,  //OT_LCI2C_SETBACKLIGHT
         59,  //OT_LCI2C_PRINT
         60,  //OT_LCI2C_PRINTBYTE
+        61,  //OT_MKSERIAL_SEND
+        62,  //OT_RETURN_MKSERIAL
+        63,  //OT_MKSERAL_CLEAR
         150, //OT_MC_INTERNAL_LIGHT
         151, //OT_MC_LIGHT
         152, //OT_MC_SEGMENT
@@ -354,6 +357,8 @@ void MK_Arduino::Init(bool isReset)
   mk._InitAxis();
 #endif
 
+  MKSerialReceivedString = "";
+
 #if defined MK_ESP_NETWORK
   mESPUDPPort = 2333;
   mIsESPInited = false;
@@ -433,6 +438,39 @@ void MK_Arduino::_SendVersion()
 #endif
 }
 //----------------------------------------------------------------------------
+void MK_Arduino::SerialPrintln(String str){
+  Serial.println(str);
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::ClearSerialReceived(){
+  RecvStr = "";
+}
+//----------------------------------------------------------------------------
+String MK_Arduino::GetSerialReceived(){
+  return RecvStr;
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::MKSerialSend(String str)
+{
+     unsigned char cmdCh = sOptTypeVal[OT_MKSERIAL_SEND];
+    char strCMDCh[32];
+    memset(strCMDCh, 0, 32);
+    itoa(cmdCh, strCMDCh, 10);
+
+    String sendStr = String(strCMDCh) + " " + str;
+    String lastCmdStr = "0000" + sendStr;
+    Serial.println(lastCmdStr);
+}
+//----------------------------------------------------------------------------
+String MK_Arduino::GetMKSerialReceivedString(){
+  return MKSerialReceivedString;  
+}
+//----------------------------------------------------------------------------
+void MK_Arduino::ClearMKSerialReceivedString()
+{
+  MKSerialReceivedString = "";
+}
+//----------------------------------------------------------------------------
 bool result = false;
 bool resultR = false;
 bool doSendVersion = true;
@@ -445,18 +483,18 @@ void MK_Arduino::Tick()
     
     if ('\n' == c)
     {
-      if (mk.RecvStr.length() > 0)
+      if (RecvStr.length() > 0)
       {
         // to compatile with PHOENIXEngine
         // 2 for length,2 for id
         String cmdStr = mk.RecvStr.substring(4);
-        mk.OnCMD(mCmdParams, cmdStr);
+        OnCMD(mCmdParams, cmdStr);
       }
-      mk.RecvStr = "";
+      RecvStr = "";
     }
     else
     {
-      mk.RecvStr += c;
+      RecvStr += c;
     }
   }
 
